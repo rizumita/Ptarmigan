@@ -33,4 +33,6 @@ module.exports = {
             '.ts', '.js',
         ],
     },
+
+    target:'node'
 };
