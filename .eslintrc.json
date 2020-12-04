@@ -1,0 +1,34 @@
+{
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended",
+        "prettier",
+        "prettier/@typescript-eslint"
+    ],
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "env": {
+        "node": true,
+        "es6": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+    },
+    "rules": {  
+         "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": false,
+          "semi": false
+        }
+      ],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }], // TypeScript用のno-unused-varsを有効にしている。
+        "no-console": ["error", { "allow": ["info", "error"] }]
+    }
+}
