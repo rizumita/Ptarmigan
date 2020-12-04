@@ -1,16 +1,14 @@
-import { stdout } from "process"
+import { stdout } from 'process'
+import { SchemaFile } from './schemaFile'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ExportAction {
   constructor(schema: string, output: string) {
-    this.schema = schema
+    this.schemaFile = new SchemaFile(schema)
     this.output = output
   }
 
-  schema: string
+  schemaFile: SchemaFile
   output: string
 
-  public execute(): void {
-    stdout.write(this.schema)
-  }
+  public execute(): void {}
 }

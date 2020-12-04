@@ -1,3 +1,3 @@
-import { handleCommand } from "./handleCommand"
+import { handleCommand } from './handleCommand'
 
 handleCommand(process.argv)
