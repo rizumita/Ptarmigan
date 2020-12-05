@@ -1,10 +1,10 @@
-import { Parser } from './parser'
+import { IParser } from './iParser'
 import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
 
-export class OrParser implements Parser<[Array<any>]> {
-  psArray: Parser<any>[]
+export class OrParser implements IParser<[Array<any>]> {
+  psArray: IParser<any>[]
 
-  constructor(psArray: Parser<any>[]) {
+  constructor(psArray: IParser<any>[]) {
     this.psArray = psArray
   }
 
@@ -21,6 +21,6 @@ export class OrParser implements Parser<[Array<any>]> {
   }
 }
 
-export function or(psArray: Parser<any>[]) {
+export function or(psArray: IParser<any>[]) {
   return new OrParser(psArray)
 }

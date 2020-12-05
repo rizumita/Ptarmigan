@@ -1,10 +1,10 @@
-import { Parser } from './parser'
+import { IParser } from './iParser'
 import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
 
-export class OptionParser implements Parser<[any]> {
-  ps: Parser<any>
+export class OptionParser implements IParser<[any]> {
+  ps: IParser<any>
 
-  constructor(ps: Parser<any>) {
+  constructor(ps: IParser<any>) {
     this.ps = ps
   }
 
@@ -20,6 +20,6 @@ export class OptionParser implements Parser<[any]> {
   }
 }
 
-export function option(parser: Parser<any>) {
+export function option(parser: IParser<any>) {
   return new OptionParser(parser)
 }

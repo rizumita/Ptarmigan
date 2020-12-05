@@ -1,11 +1,11 @@
 import { parse } from 'path'
-import { Parser } from './parser'
+import { IParser } from './parser'
 import { ParseResult, ParseSuccess } from './parseResult'
 
-export class ContinueParser implements Parser<any> {
-  parser: Parser<any>
+export class ContinueParser implements IParser<any> {
+  parser: IParser<any>
 
-  constructor(parser: Parser<any>) {
+  constructor(parser: IParser<any>) {
     this.parser = parser
   }
 
@@ -25,6 +25,6 @@ export class ContinueParser implements Parser<any> {
   }
 }
 
-export function many(parser: Parser<any>) {
+export function many(parser: IParser<any>) {
   return new ContinueParser(parser)
 }

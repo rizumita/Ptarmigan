@@ -1,12 +1,12 @@
-import { Parser } from './parser'
+import { IParser } from './iParser'
 import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
 
-export class TripleParser implements Parser<[any, any, any]> {
-  fhs: Parser<any>
-  shs: Parser<any>
-  ths: Parser<any>
+export class TripleParser implements IParser<[any, any, any]> {
+  fhs: IParser<any>
+  shs: IParser<any>
+  ths: IParser<any>
 
-  constructor(fhs: Parser<any>, shs: Parser<any>, ths: Parser<any>) {
+  constructor(fhs: IParser<any>, shs: IParser<any>, ths: IParser<any>) {
     this.fhs = fhs
     this.shs = shs
     this.ths = ths
@@ -41,6 +41,6 @@ export class TripleParser implements Parser<[any, any, any]> {
   }
 }
 
-export function bracket(fps: Parser<any>, sps: Parser<any>, tps: Parser<any>) {
+export function triple(fps: IParser<any>, sps: IParser<any>, tps: IParser<any>) {
   return new TripleParser(fps, sps, tps)
 }

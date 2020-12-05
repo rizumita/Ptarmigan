@@ -1,7 +1,7 @@
-import { Parser } from './parser'
+import { IParser } from './iParser'
 import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
 
-export class StopWordParser implements Parser<string[]> {
+export class StopWordParser implements IParser<string> {
   stopWords: string[]
 
   constructor(stopWords: string[]) {

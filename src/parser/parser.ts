@@ -1,5 +1,12 @@
-import { ParseResult } from './parseResult'
-
-export interface Parser<T> {
-  parse(input: string): ParseResult<T>
-}
+export * from './iParser'
+export * from './continueParser'
+export * from './endParser'
+export * from './optionParser'
+export * from './orParser'
+export * from './parseResult'
+export * from './seqParser'
+export * from './stopWordParser'
+export * from './stringParser'
+export * from './tripleParser'
+export * from './regExpParser'
+export * from './ignoreParser'

@@ -1,7 +1,7 @@
-import { Parser } from './parser'
+import { IParser } from './iParser'
 import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
 
-export class StringParser implements Parser<string> {
+export class StringParser implements IParser<string> {
   literal: string
 
   public constructor(literal: string) {

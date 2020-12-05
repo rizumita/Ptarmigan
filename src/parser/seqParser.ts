@@ -1,11 +1,11 @@
-import { Parser } from './parser'
+import { IParser } from './iParser'
 import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
 
-export class SeqParser implements Parser<[any, any]> {
-  lhs: Parser<any>
-  rhs: Parser<any>
+export class SeqParser implements IParser<[any, any]> {
+  lhs: IParser<any>
+  rhs: IParser<any>
 
-  constructor(lhs: Parser<any>, rhs: Parser<any>) {
+  constructor(lhs: IParser<any>, rhs: IParser<any>) {
     this.lhs = lhs
     this.rhs = rhs
   }
@@ -35,6 +35,6 @@ export class SeqParser implements Parser<[any, any]> {
   }
 }
 
-export function seq(lps: Parser<any>, rps: Parser<any>) {
+export function seq(lps: IParser<any>, rps: IParser<any>) {
   return new SeqParser(lps, rps)
 }
