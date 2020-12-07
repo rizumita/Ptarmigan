@@ -23,10 +23,10 @@ export class StopWordParser implements IParser<string> {
   }
 
   parse(input: string): ParseResult<string> {
-    const muchString = this.words(input)
+    const matchString = this.words(input)
 
-    if (muchString.length > 0) {
-      return new ParseSuccess(muchString, input.substring(muchString.length))
+    if (matchString.length > 0) {
+      return new ParseSuccess(matchString, input.substring(matchString.length))
     } else {
       return new ParseFailure<any>('much stop word: ' + this.stopWords.toString(), input)
     }
