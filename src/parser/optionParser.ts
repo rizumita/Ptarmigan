@@ -1,5 +1,5 @@
 import { IParser } from './iParser'
-import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseIgnored, ParseResult, ParseSuccess } from './parseResult'
 
 export class OptionParser implements IParser<[any]> {
   ps: IParser<any>
@@ -11,7 +11,7 @@ export class OptionParser implements IParser<[any]> {
   parse(input: string): ParseResult<any> {
     const psresult = this.ps.parse(input)
 
-    if (psresult instanceof ParseSuccess) {
+    if (psresult instanceof ParseSuccess || psresult instanceof ParseIgnored) {
       const value = psresult.value
       return new ParseSuccess<any>(value, psresult.next)
     } else {

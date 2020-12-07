@@ -10,13 +10,13 @@ export class ContinueParser implements IParser<any> {
   }
 
   parse(input: string): ParseResult<Array<any>> {
-    var next = input
+    let next = input
     const values = new Array<any>()
     while (true) {
       const previous = next
       const result = this.parser.parse(next)
       if (result instanceof ParseSuccess) {
-        values.push(result.value)
+        if (result.value != null) values.push(result.value)
         next = result.next
       } else {
         return new ParseSuccess(values, previous)

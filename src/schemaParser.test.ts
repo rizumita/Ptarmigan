@@ -1,57 +1,57 @@
-import { itemParser } from './schemaParser'
+import { colDocParser, constParser, itemParser, typeParser } from './schemaParser'
 import { ParseSuccess } from './parser/parseResult'
 
-describe('SchemaParser', () => {
+describe('Item parser', () => {
   test.each([
-    ['project: manabo2', ['project', null, 'manabo2'], ''],
-    ['project: manabo2 student', ['project', null, 'manabo2 student'], '']
-  ])('parse succeeded', (input, value, next) =>
+    ['project = MyProject', ['project', 'MyProject'], ''],
+    ['project = my project', ['project', 'my project'], '']
+  ])('succeeded parsing item', (input, value, next) =>
     expect(itemParser.parse(input)).toStrictEqual(new ParseSuccess(value, next))
   )
+
+  test.each([
+    ['const Ver = v1', ['const', 'Ver', 'v1']],
+    ['const Ver  =  v2', ['const', 'Ver', 'v2']]
+  ])('succeeded parsing const', (input, value) =>
+    expect(constParser.parse(input)).toStrictEqual(new ParseSuccess(value, ''))
+  )
+
+  test.each([
+    ['type Name = string', ['type', 'Name', 'string']],
+    ['type Name  =  string', ['type', 'Name', 'string']],
+    [
+      `type User = {
+    id: ID
+    name: Name
+  }
+  `,
+      [
+        'type',
+        'User',
+        [
+          ['id', 'ID'],
+          ['name', 'Name']
+        ]
+      ]
+    ]
+  ])('succeeded parsing type', (input, value) =>
+    expect(typeParser.parse(input)).toStrictEqual(new ParseSuccess(value, ''))
+  )
+
+  test.each([
+    [
+      `
+collection users {
+  document User {
+    collection notes {
+      document Note
+    }
+  }
+}
+`,
+      ['collection', 'users', ['document', 'User', ['collection', 'notes', ['document', 'Note']]]]
+    ]
+  ])('succeeded parsing collection and document', (input, value) =>
+    expect(colDocParser.parse(input)).toStrictEqual(new ParseSuccess(value, ''))
+  )
 })
-
-const schemaString = 'project: manabo2'
-// description: manabo2 firestore schema
-// constant Ver = v1
-
-// type AvatarURL: string
-// type ID: int
-
-// type SchoolYear {
-//   id: ID
-//   text: string
-//   needs_target_university: bool
-// }
-
-// type TargetUniversityLevel {
-//   id: ID
-//   text: string
-// }
-
-// type FacultyType {
-//   id: ID
-//   text: String
-// }
-
-// type Avatar {
-//   id: ID
-//   url: AvatarURL
-// }
-
-// collection /public/$Ver/registrations/%organization_id {
-//   school_years: [SchoolYear]
-//   target_university_levels: [TargetUniversityLevel]
-//   faculty_types: [FacultyType]
-// }
-
-// collection public {
-//   document $Var {
-//     collection registrations {
-//       document %registration_id {
-//         school_years: [SchoolYear]
-//         target_university_levels: [TargetUniversityLevel]
-//         faculty_types: [FacultyType]
-//         avatars: [Avatar]
-//     }
-//   }
-// }

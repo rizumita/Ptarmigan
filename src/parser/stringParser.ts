@@ -1,5 +1,5 @@
 import { IParser } from './iParser'
-import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
 export class StringParser implements IParser<string> {
   literal: string
@@ -16,7 +16,7 @@ export class StringParser implements IParser<string> {
     if (input.startsWith(this.literal)) {
       return new ParseSuccess(this.literal, input.substring(this.literal.length))
     } else {
-      return new ParseFailuer('expect: ' + this.literal, input)
+      return new ParseFailure('expect: ' + this.literal, input)
     }
   }
 }

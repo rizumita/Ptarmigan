@@ -1,5 +1,5 @@
 import { IParser } from './iParser'
-import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
 export class OrParser implements IParser<[Array<any>]> {
   psArray: IParser<any>[]
@@ -17,7 +17,7 @@ export class OrParser implements IParser<[Array<any>]> {
       }
     }
 
-    return new ParseFailuer<any>('', input)
+    return new ParseFailure<any>('', input)
   }
 }
 

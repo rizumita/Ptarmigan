@@ -14,7 +14,16 @@ export class ParseSuccess<T> implements ParseResult<T> {
   }
 }
 
-export class ParseFailuer<T> implements ParseResult<T> {
+export class ParseIgnored<T> implements ParseResult<T> {
+  value: T | null = null
+  next: string
+
+  constructor(next: string) {
+    this.next = next
+  }
+}
+
+export class ParseFailure<T> implements ParseResult<T> {
   message: string
   next: string
 

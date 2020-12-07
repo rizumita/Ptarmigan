@@ -1,4 +1,4 @@
-import { ParseFailuer, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseSuccess } from './parseResult'
 import { StringParser } from './stringParser'
 
 describe('StringParser', () => {
@@ -11,6 +11,6 @@ describe('StringParser', () => {
   )
 
   test.each([['test', 'aaa', 'expect: test']])('parse failed ', (literal, input, message) =>
-    expect(new StringParser(literal).parse(input)).toStrictEqual(new ParseFailuer(message, input))
+    expect(new StringParser(literal).parse(input)).toStrictEqual(new ParseFailure(message, input))
   )
 })

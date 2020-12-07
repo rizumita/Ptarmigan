@@ -1,5 +1,5 @@
 import { IParser } from './iParser'
-import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
 export class EndParser implements IParser<any> {
   public constructor() {}
@@ -8,7 +8,7 @@ export class EndParser implements IParser<any> {
     if (input == '') {
       return new ParseSuccess(null, input)
     } else {
-      return new ParseFailuer('expected: end, actual: ' + input, input)
+      return new ParseFailure('expected: end, actual: ' + input, input)
     }
   }
 }

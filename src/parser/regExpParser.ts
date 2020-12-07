@@ -1,5 +1,5 @@
 import { IParser } from './iParser'
-import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
 export class RegExpParser implements IParser<string> {
   regexp: RegExp
@@ -16,7 +16,7 @@ export class RegExpParser implements IParser<string> {
       const value = execArray[0]
       return new ParseSuccess(value, input.substring(value.length))
     } else {
-      return new ParseFailuer('/' + this.regexp.source + '/ is not match', input)
+      return new ParseFailure('/' + this.regexp.source + '/ is not match', input)
     }
   }
 }

@@ -1,5 +1,5 @@
 import { IParser } from './iParser'
-import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseIgnored, ParseResult, ParseSuccess } from './parseResult'
 
 export class TripleParser implements IParser<[any, any, any]> {
   fhs: IParser<any>
@@ -20,23 +20,24 @@ export class TripleParser implements IParser<[any, any, any]> {
       var next = fresult.next
       const sresult = this.shs.parse(next)
 
-      if (sresult instanceof ParseSuccess) {
+      if (sresult instanceof ParseSuccess || sresult instanceof ParseIgnored) {
         const value2 = sresult.value
         next = sresult.next
         const tresult = this.ths.parse(next)
 
-        if (tresult instanceof ParseSuccess) {
+        if (tresult instanceof ParseSuccess || tresult instanceof ParseIgnored) {
           const value3 = tresult.value
           next = tresult.next
-          return new ParseSuccess<[any, any, any]>([value1, value2, value3], next)
+          const valueArray = [value1, value2, value3].filter((v) => v !== null)
+          return new ParseSuccess<any>(valueArray, next)
         } else {
-          return new ParseFailuer<any>(next + ' is not match', input)
+          return new ParseFailure<any>(next + ' is not match', input)
         }
       } else {
-        return new ParseFailuer<any>(next + ' is not match', input)
+        return new ParseFailure<any>(next + ' is not match', input)
       }
     } else {
-      return new ParseFailuer<any>((fresult as ParseFailuer<any>).next + ' is not match', input)
+      return new ParseFailure<any>((fresult as ParseFailure<any>).next + ' is not match', input)
     }
   }
 }

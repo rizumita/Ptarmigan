@@ -1,40 +1,32 @@
 import { IParser } from './iParser'
-import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseIgnored, ParseResult, ParseSuccess } from './parseResult'
 
-export class SeqParser implements IParser<[any, any]> {
-  lhs: IParser<any>
-  rhs: IParser<any>
+export class SeqParser implements IParser<any[]> {
+  parsers: IParser<any>[]
 
-  constructor(lhs: IParser<any>, rhs: IParser<any>) {
-    this.lhs = lhs
-    this.rhs = rhs
+  constructor(parsers: IParser<any>[]) {
+    this.parsers = parsers
   }
 
-  parse(input: string): ParseResult<any> {
-    const lresult: ParseResult<any> = this.lhs.parse(input)
+  parse(input: string): ParseResult<any[]> {
+    let next = input
+    let values = Array<any>()
 
-    if (lresult instanceof ParseSuccess) {
-      const value1 = lresult.value
-      var next = lresult.next
-      const rresult = this.rhs.parse(next)
+    for (const item of this.parsers) {
+      const result = item.parse(next)
 
-      if (rresult instanceof ParseSuccess) {
-        const value2 = rresult.value
-        return new ParseSuccess<[any, any]>([value1, value2], rresult.next)
-      } else if (rresult instanceof ParseFailuer) {
-        return new ParseFailuer<any>(next + ' is not match', rresult.message)
+      if (result instanceof ParseSuccess || result instanceof ParseIgnored) {
+        values.push(result.value)
+        next = result.next
       } else {
-        return new ParseFailuer<any>(next + ' is not match', input)
+        return result
       }
-    } else {
-      return new ParseFailuer<any>(
-        (lresult as ParseFailuer<any>).next + 'is not match',
-        (lresult as ParseFailuer<any>).message
-      )
     }
+
+    return new ParseSuccess(values, next)
   }
 }
 
-export function seq(lps: IParser<any>, rps: IParser<any>) {
-  return new SeqParser(lps, rps)
+export function seq(parsers: IParser<any>[]) {
+  return new SeqParser(parsers)
 }

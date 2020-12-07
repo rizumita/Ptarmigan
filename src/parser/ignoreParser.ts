@@ -1,7 +1,7 @@
 import { IParser } from './iParser'
-import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseIgnored, ParseResult, ParseSuccess } from './parseResult'
 
-export class IgnoreParser implements IParser<any[]> {
+export class IgnoreParser implements IParser<any> {
   parser: IParser<any>
 
   constructor(parser: IParser<any>) {
@@ -12,7 +12,7 @@ export class IgnoreParser implements IParser<any[]> {
     const result = this.parser.parse(input)
 
     if (result instanceof ParseSuccess) {
-      return new ParseSuccess(null, result.next)
+      return new ParseIgnored(result.next)
     }
     return result
   }

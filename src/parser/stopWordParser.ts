@@ -1,5 +1,5 @@
 import { IParser } from './iParser'
-import { ParseFailuer, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
 export class StopWordParser implements IParser<string> {
   stopWords: string[]
@@ -28,7 +28,7 @@ export class StopWordParser implements IParser<string> {
     if (muchString.length > 0) {
       return new ParseSuccess(muchString, input.substring(muchString.length))
     } else {
-      return new ParseFailuer<any>('much stop word: ' + this.stopWords.toString(), input)
+      return new ParseFailure<any>('much stop word: ' + this.stopWords.toString(), input)
     }
   }
 }
