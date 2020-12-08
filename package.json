@@ -43,6 +43,7 @@
   "dependencies": {
     "@types/faker": "^5.1.5",
     "@types/oniguruma": "^7.0.1",
+    "firebase-admin": "^9.4.1",
     "oniguruma": "^7.2.1"
   }
 }
