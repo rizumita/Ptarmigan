@@ -22,12 +22,12 @@ type ID: int@unique
 type Name: string@name.firstName
 type Title: string@name.title
 
-type User = {
+type User: {
   id: ID
   name: Name
 }
 
-type Note = {
+type Note: {
   id: ID
   title: Title
 }
