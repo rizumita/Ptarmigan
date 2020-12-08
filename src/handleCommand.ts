@@ -1,7 +1,7 @@
 import { makeStringFlag, makeCommand, reduceFlag, makeStringArgument, makePositionalArguments } from 'catacli'
 import fs from 'fs'
 import { CommandError } from './commandError'
-import { ExportAction } from './exportAction'
+import { ExportAction } from './actions/exportAction'
 
 export function handleCommand(argv: string[]): void {
   const outputFlag = makeStringFlag('output', {

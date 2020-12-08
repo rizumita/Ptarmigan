@@ -41,6 +41,8 @@
     "ptarmigan": "./bin/ptarmigan.js"
   },
   "dependencies": {
-    "@types/faker": "^5.1.5"
+    "@types/faker": "^5.1.5",
+    "@types/oniguruma": "^7.0.1",
+    "oniguruma": "^7.2.1"
   }
 }

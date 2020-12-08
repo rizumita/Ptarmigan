@@ -6,8 +6,8 @@ export class ValueType implements TypedValue {
   faker: string | null
 
   constructor(value: string[]) {
-    this.typeName = value[1]
-    this.valueType = value[2]
-    this.faker = value[3]
+    this.typeName = value[0]
+    this.valueType = value[1]
+    this.faker = value[2]
   }
 }

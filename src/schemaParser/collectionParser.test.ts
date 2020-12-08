@@ -3,60 +3,42 @@ import { ParseSuccess } from '../parser/parseResult'
 import { CollectionType } from '../schema/CollectionType'
 import { DocumentType } from '../schema/documentType'
 import { Fake } from '../schema/fake'
+import { Generate } from '../schema/generate'
 
 describe('Parsing collection', () => {
   test.each([
-    [
-      `collection users { document User { } }`,
-      new CollectionType(['collection', 'users', [new DocumentType(['document', 'User'])]])
-    ],
-    [
-      `collection users { document User }`,
-      new CollectionType(['collection', 'users', [new DocumentType(['document', 'User'])]])
-    ],
-    [
-      `collection users{document User}`,
-      new CollectionType(['collection', 'users', [new DocumentType(['document', 'User'])]])
-    ],
-    [
-      `collection users{document User{}}`,
-      new CollectionType(['collection', 'users', [new DocumentType(['document', 'User'])]])
-    ],
+    [`collection users { document User { } }`, new CollectionType(['users', [new DocumentType(['User'])]])],
+    [`collection users { document User }`, new CollectionType(['users', [new DocumentType(['User'])]])],
+    [`collection users{document User}`, new CollectionType(['users', [new DocumentType(['User'])]])],
+    [`collection users{document User{}}`, new CollectionType(['users', [new DocumentType(['User'])]])],
     [
       `collection users {
-  fake: 100
-  document User {
-    collection notes {
-      document Note
-    }
-  }
-}`,
+      document User {
+        collection notes {
+          document Note
+          fake 100
+          generate { "uniqueid": { "title": "my note" } }
+        }
+      }
+    }`,
       new CollectionType([
-        'collection',
         'users',
         [
-          new Fake(['fake', '100']),
           new DocumentType([
-            'document',
             'User',
-            new CollectionType(['collection', 'notes', [new DocumentType(['document', 'Note'])]])
+            new CollectionType([
+              'notes',
+              [new DocumentType(['Note']), new Fake(100), new Generate('{ "uniqueid": { "title": "my note" } }')]
+            ])
           ])
         ]
       ])
     ],
     [
-      `collection users {fake: 100 document User{collection notes{document Note}}}`,
+      `collection users {fake 100 document User{collection notes{document Note}}}`,
       new CollectionType([
-        'collection',
         'users',
-        [
-          new Fake(['fake', '100']),
-          new DocumentType([
-            'document',
-            'User',
-            new CollectionType(['collection', 'notes', [new DocumentType(['document', 'Note'])]])
-          ])
-        ]
+        [new Fake(100), new DocumentType(['User', new CollectionType(['notes', [new DocumentType(['Note'])]])])]
       ])
     ]
   ])('is succeeded', (input, value) => expect(collectionParser.parse(input)).toStrictEqual(new ParseSuccess(value, '')))

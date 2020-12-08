@@ -5,7 +5,7 @@ export class Info implements TypedValue {
   value: string
 
   constructor(value: string[]) {
-    this.key = value[1]
-    this.value = value[2]
+    this.key = value[0]
+    this.value = value[1]
   }
 }

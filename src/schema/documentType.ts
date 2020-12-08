@@ -7,7 +7,7 @@ export class DocumentType implements TypedValue {
   collection: CollectionType | undefined
 
   constructor(value: any[]) {
-    this.typeName = value[1]
-    this.collection = value[2]
+    this.typeName = value[0]
+    this.collection = value[1]
   }
 }

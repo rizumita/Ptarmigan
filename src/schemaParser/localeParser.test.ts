@@ -4,15 +4,12 @@ import { Locale } from '../schema/locale'
 
 describe('Parsing locale', () => {
   test.each([
-    ['locale = ja', new Locale(['locale', 'ja'])],
-    ['locale=ja', new Locale(['locale', 'ja'])],
-    ['locale  =  ja', new Locale(['locale', 'ja'])]
+    ['locale = ja', new Locale(['ja'])],
+    ['locale=ja', new Locale(['ja'])],
+    ['locale  =  ja', new Locale(['ja'])]
   ])('is succeeded', (input, value) => expect(localeParser.parse(input)).toStrictEqual(new ParseSuccess(value, '')))
 
-  test.each([
-    ['locale =', '/^\\b[\\w\\.]+/ is not match', ''],
-    ['locale=\nja', '/^\\b[\\w\\.]+/ is not match', '\nja']
-  ])('is failed', (input, message, next) =>
+  test.each([['locale =', '/^[\\w\\.]+/ is not match', '']])('is failed', (input, message, next) =>
     expect(localeParser.parse(input)).toStrictEqual(new ParseFailure(message, next))
   )
 })

@@ -4,14 +4,13 @@ import { ComplexType } from '../schema/complexType'
 
 describe('Parsing complex type', () => {
   test.each([
-    ['type User = {}', new ComplexType(['type', 'User'])],
+    ['type User: {}', new ComplexType(['User', []])],
     [
-      `type User = {
+      `type User: {
     id: ID
     name: Name
   }`,
       new ComplexType([
-        'type',
         'User',
         [
           ['id', 'ID'],
@@ -24,9 +23,9 @@ describe('Parsing complex type', () => {
   )
 
   test.each([
-    ['type User =', 'expect: {', ''],
+    ['type User:', 'expect: {', ''],
     [
-      `type User = {
+      `type User: {
     id: ID
     name: Name`,
       'expect: }',

@@ -8,6 +8,7 @@ import { CollectionType } from '../schema/CollectionType'
 import { DocumentType } from '../schema/documentType'
 import { Locale } from '../schema/locale'
 import { Fake } from '../schema/fake'
+import { Schema } from '../schema/schema'
 
 describe('parse item', () => {
   const schema = `
@@ -17,9 +18,9 @@ const Ver = v1
 
 locale = ja
 
-type ID = int@unique
-type Name = string@name.firstName
-type Title = string@name.title
+type ID: int@unique
+type Name: string@name.firstName
+type Title: string@name.title
 
 type User = {
   id: ID
@@ -32,7 +33,7 @@ type Note = {
 }
 
 collection users {
-  fake: 100
+  fake 100
   document User {
     collection notes {
       document Note
@@ -44,15 +45,14 @@ collection users {
   test('parse schema', () =>
     expect(schemaParser.parse(schema)).toStrictEqual(
       new ParseSuccess(
-        [
-          new Info(['info', 'project', 'MyProject']),
-          new Constant(['const', 'Ver', 'v1']),
-          new Locale(['locale', 'ja']),
-          new ValueType(['type', 'ID', 'int', 'unique']),
-          new ValueType(['type', 'Name', 'string', 'name.firstName']),
-          new ValueType(['type', 'Title', 'string', 'name.title']),
+        new Schema([
+          new Info(['project', 'MyProject']),
+          new Constant(['Ver', 'v1']),
+          new Locale(['ja']),
+          new ValueType(['ID', 'int', 'unique']),
+          new ValueType(['Name', 'string', 'name.firstName']),
+          new ValueType(['Title', 'string', 'name.title']),
           new ComplexType([
-            'type',
             'User',
             [
               ['id', 'ID'],
@@ -60,7 +60,6 @@ collection users {
             ]
           ]),
           new ComplexType([
-            'type',
             'Note',
             [
               ['id', 'ID'],
@@ -68,18 +67,10 @@ collection users {
             ]
           ]),
           new CollectionType([
-            'collection',
             'users',
-            [
-              new Fake(['Fake', '100']),
-              new DocumentType([
-                'document',
-                'User',
-                new CollectionType(['collection', 'notes', [new DocumentType(['document', 'Note'])]])
-              ])
-            ]
+            [new Fake(100), new DocumentType(['User', new CollectionType(['notes', [new DocumentType(['Note'])]])])]
           ])
-        ],
+        ]),
         ''
       )
     ))
