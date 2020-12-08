@@ -1,17 +1,17 @@
 import { makeStringFlag, makeCommand, reduceFlag, makeStringArgument, makePositionalArguments } from 'catacli'
 import fs from 'fs'
 import { CommandError } from './commandError'
-import { ExportAction } from './actions/exportAction'
+import { GenerateAction } from './actions/generateAction'
 
 export function handleCommand(argv: string[]): void {
-  const outputFlag = makeStringFlag('output', {
-    alias: 'o',
-    usage: 'Output file path'
+  const configFlag = makeStringFlag('config', {
+    alias: 'c',
+    usage: 'config file path'
   })
 
   const schemaArg = makeStringArgument('schema')
 
-  const flags = reduceFlag(outputFlag)
+  const flags = reduceFlag(configFlag)
   const args = makePositionalArguments(schemaArg)
 
   const command = makeCommand({
@@ -23,8 +23,8 @@ export function handleCommand(argv: string[]): void {
     positionalArguments: args,
     handler: (args, flags) => {
       try {
-        validateSchemaCommand(args.schema.value, flags.output.value)
-        new ExportAction(args.schema.value, flags.output.value ?? '').execute()
+        validateSchemaCommand(args.schema.value, flags.config.value)
+        new GenerateAction(args.schema.value, flags.config.value ?? '').execute()
       } catch (e) {
         process.stderr.write(e.message)
       }

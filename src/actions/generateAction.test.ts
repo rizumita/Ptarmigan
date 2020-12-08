@@ -1,7 +1,7 @@
-import { ExportAction, parseSchema } from './exportAction'
+import { GenerateAction, parseSchema } from './generateAction'
 import * as fs from 'fs'
 
-describe('ExportAction', () => {
+describe('GenerateAction', () => {
   test('parseSchema', () => {
     const file = fs.realpathSync('./src/actions/test.pt')
     const schema = parseSchema(file)

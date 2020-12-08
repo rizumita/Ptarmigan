@@ -3,7 +3,7 @@ import { schemaParser } from '../schemaParser/schemaParser'
 import { ParseSuccess } from '../parser/parseResult'
 import { Schema } from '../schema/schema'
 
-export class ExportAction {
+export class GenerateAction {
   constructor(schema: string, output: string) {
     this.schemaFile = new SchemaFile(schema)
     this.output = output
