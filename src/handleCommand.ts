@@ -4,9 +4,9 @@ import { CommandError } from './commandError'
 import { GenerateAction } from './actions/generateAction'
 
 export function handleCommand(argv: string[]): void {
-  const configFlag = makeStringFlag('config', {
-    alias: 'c',
-    usage: 'config file path'
+  const configFlag = makeStringFlag('projectId', {
+    alias: 'p',
+    usage: 'set projectId'
   })
 
   const schemaArg = makeStringArgument('schema')
@@ -23,8 +23,11 @@ export function handleCommand(argv: string[]): void {
     positionalArguments: args,
     handler: (args, flags) => {
       try {
-        validateSchemaCommand(args.schema.value, flags.config.value)
-        new GenerateAction(args.schema.value, flags.config.value ?? '').execute()
+        validateSchemaCommand(args.schema.value)
+        new GenerateAction(args.schema.value, flags.projectId.value ?? null).execute().then(
+          (_) => process.exit(0),
+          (_) => process.exit(1)
+        )
       } catch (e) {
         process.stderr.write(e.message)
       }
@@ -34,8 +37,7 @@ export function handleCommand(argv: string[]): void {
   command(argv.splice(2))
 }
 
-function validateSchemaCommand(schema: string, output: string | undefined) {
+function validateSchemaCommand(schema: string) {
   if (schema == null) throw new CommandError('ArgumentError', 'schema is needed.')
   if (!fs.existsSync(schema)) throw new CommandError('ArgumentError', "schema doesn't exist.")
-  if (output == undefined) throw new CommandError('OptionError', 'output option is needed.')
 }

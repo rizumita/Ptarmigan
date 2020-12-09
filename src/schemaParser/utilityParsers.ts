@@ -4,12 +4,15 @@ import { IParser } from '../parser/parser'
 export const space = P.string(' ')
 export const spaces = P.many(space)
 export const lineFeed = P.string('\n')
+export const endOfLine = P.or([P.string('\n'), P.end()])
 export const whitespaces = P.many(P.or([space, lineFeed]))
 export const word = P.matchRegex(/[\w\.]+/)
 export const emptyableWord = P.matchRegex(/\w*/)
 export const equal = P.string('=')
 export const sentence = P.matchRegex(/[\w ]+/)
 export const name = P.matchRegex(/[\w]+/)
+export const projectIdPattern = P.matchRegex(/[\S]+/)
+export const typePatter = P.matchRegex(/[\S]+/)
 
 export function inParenthesis(parser: IParser<any>) {
   const start = P.string('(')

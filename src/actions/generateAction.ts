@@ -2,28 +2,33 @@ import { SchemaFile } from '../schemaFile'
 import { schemaParser } from '../schemaParser/schemaParser'
 import { ParseSuccess } from '../parser/parseResult'
 import { Schema } from '../schema/schema'
+import { Generator } from './generator'
+import { ProjectId } from '../schema/projectId'
+import { InvalidSchemaError } from '../schema/invalidSchemaError'
+import { SchemaValidator } from '../schema/schemaValidator'
 
 export class GenerateAction {
-  constructor(schema: string, output: string) {
+  constructor(schema: string, projectId: string | null) {
     this.schemaFile = new SchemaFile(schema)
-    this.output = output
+    this.projectId = projectId != null ? new ProjectId(projectId) : null
   }
 
   schemaFile: SchemaFile
-  output: string
+  projectId: ProjectId | null
 
-  public execute(): void {
+  public async execute() {
     try {
       const schema = parseSchema(this.schemaFile.text)
+      SchemaValidator.validate(schema)
+      await new Generator(schema).generate()
     } catch (e) {
       process.stderr.write(e.toString())
     }
   }
 }
 
-export function parseSchema(pt: string) {
-  const schemaFile = new SchemaFile(pt)
-  const result = schemaParser.parse(schemaFile.text)
+export function parseSchema(schemaText: string) {
+  const result = schemaParser.parse(schemaText)
 
   if (result instanceof ParseSuccess) {
     return result.value as Schema

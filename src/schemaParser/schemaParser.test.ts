@@ -9,13 +9,14 @@ import { DocumentType } from '../schema/documentType'
 import { Locale } from '../schema/locale'
 import { Fake } from '../schema/fake'
 import { Schema } from '../schema/schema'
+import { ProjectId } from '../schema/projectId'
 
 describe('parse item', () => {
   const schema = `
-info project = MyProject
+info description = My Project
 
+projectId = MyProject
 const Ver = v1
-
 locale = ja
 
 type ID: int@unique
@@ -46,9 +47,10 @@ collection users {
     expect(schemaParser.parse(schema)).toStrictEqual(
       new ParseSuccess(
         new Schema([
-          new Info(['project', 'MyProject']),
+          new Info(['description', 'My Project']),
+          new ProjectId('MyProject'),
           new Constant(['Ver', 'v1']),
-          new Locale(['ja']),
+          new Locale('ja'),
           new ValueType(['ID', 'int', 'unique']),
           new ValueType(['Name', 'string', 'name.firstName']),
           new ValueType(['Title', 'string', 'name.title']),

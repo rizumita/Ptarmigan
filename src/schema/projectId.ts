@@ -1,9 +1,9 @@
 import { TypedValue } from '../parser/typedParser'
 
-export class Locale implements TypedValue {
-  name: string
+export class ProjectId implements TypedValue {
+  value: string
 
   constructor(value: string) {
-    this.name = value
+    this.value = value
   }
 }

@@ -9,12 +9,14 @@ describe('Parsing complex type', () => {
       `type User: {
     id: ID
     name: Name
+    tags: Tag[]
   }`,
       new ComplexType([
         'User',
         [
           ['id', 'ID'],
-          ['name', 'Name']
+          ['name', 'Name'],
+          ['tags', 'Tag[]']
         ]
       ])
     ]

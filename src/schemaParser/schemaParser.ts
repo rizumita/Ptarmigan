@@ -10,8 +10,24 @@ import { Locale } from '../schema/locale'
 import { Fake } from '../schema/fake'
 import { Schema } from '../schema/schema'
 import { Generate } from '../schema/generate'
-import { dict, equal, inCurlyBraces, name, sentence, space, spaces, whitespaces, word, wrapWSs } from './utilityParsers'
+import {
+  dict,
+  endOfLine,
+  equal,
+  inCurlyBraces,
+  name,
+  projectIdPattern,
+  sentence,
+  space,
+  spaces,
+  typePatter,
+  whitespaces,
+  word,
+  wrapWSs
+} from './utilityParsers'
+import { ProjectId } from '../schema/projectId'
 
+const projectIdKey = P.string('projectId')
 const infoKey = P.string('info')
 const localeKey = P.string('locale')
 const constKey = P.string('const')
@@ -21,14 +37,30 @@ const generateKey = P.string('generate')
 const documentKey = P.string('document')
 const collectionKey = P.string('collection')
 
-const keyValue = P.unwrap(P.triple(word, P.ignore(wrapWSs(P.string(':'))), word))
+const keyValue = P.unwrap(P.triple(word, P.ignore(wrapWSs(P.string(':'))), typePatter))
 
+export const projectIdParser = P.typed(
+  ProjectId,
+  P.unwrap(
+    P.unwrap(
+      P.seq([
+        P.ignore(projectIdKey),
+        P.ignore(P.option(spaces)),
+        P.ignore(P.string('=')),
+        P.ignore(P.option(spaces)),
+        projectIdPattern,
+        P.ignore(P.option(spaces)),
+        P.ignore(endOfLine)
+      ])
+    )
+  )
+)
 export const infoParser = P.typed(
   Info,
   P.unwrap(
     P.seq([
       P.ignore(infoKey),
-      P.ignore(P.many(space)),
+      P.ignore(spaces),
       P.stop([' ', '=']),
       P.option(P.ignore(P.many(space))),
       P.ignore(equal),
@@ -39,7 +71,11 @@ export const infoParser = P.typed(
 )
 export const localeParser = P.typed(
   Locale,
-  P.unwrap(P.seq([P.ignore(localeKey), P.option(P.ignore(spaces)), P.ignore(equal), P.option(P.ignore(spaces)), word]))
+  P.unwrap(
+    P.unwrap(
+      P.seq([P.ignore(localeKey), P.option(P.ignore(spaces)), P.ignore(equal), P.option(P.ignore(spaces)), word])
+    )
+  )
 )
 export const constParser = P.typed(
   Constant,
@@ -131,5 +167,17 @@ export const collectionParser = createCollectionParser(
 
 export const schemaParser = P.typed(
   Schema,
-  P.many(wrapWSs(P.or([infoParser, localeParser, constParser, complexTypeParser, valueTypeParser, collectionParser])))
+  P.many(
+    wrapWSs(
+      P.or([
+        infoParser,
+        projectIdParser,
+        localeParser,
+        constParser,
+        complexTypeParser,
+        valueTypeParser,
+        collectionParser
+      ])
+    )
+  )
 )

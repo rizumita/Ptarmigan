@@ -4,9 +4,9 @@ import { Locale } from '../schema/locale'
 
 describe('Parsing locale', () => {
   test.each([
-    ['locale = ja', new Locale(['ja'])],
-    ['locale=ja', new Locale(['ja'])],
-    ['locale  =  ja', new Locale(['ja'])]
+    ['locale = ja', new Locale('ja')],
+    ['locale=ja', new Locale('ja')],
+    ['locale  =  ja', new Locale('ja')]
   ])('is succeeded', (input, value) => expect(localeParser.parse(input)).toStrictEqual(new ParseSuccess(value, '')))
 
   test.each([['locale =', '/^[\\w\\.]+/ is not match', '']])('is failed', (input, message, next) =>

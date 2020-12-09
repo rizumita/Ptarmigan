@@ -5,7 +5,11 @@ export class Constant implements TypedValue {
   value: string
 
   constructor(value: string[]) {
-    this.key = value[0]
+    this.key = '$' + value[0]
     this.value = value[1]
+  }
+
+  static isConstant(value: string) {
+    return value.startsWith('$')
   }
 }

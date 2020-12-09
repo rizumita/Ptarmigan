@@ -1,4 +1,6 @@
-info project = My Project
+info description = My Project
+
+projectId = MyProject
 
 const Ver = v1
 locale = ja
