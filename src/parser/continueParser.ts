@@ -1,5 +1,5 @@
 import { parse } from 'path'
-import { IParser } from './parser'
+import { IParser, ParseIgnored } from './parser'
 import { ParseResult, ParseSuccess } from './parseResult'
 
 export class ContinueParser implements IParser<any> {
@@ -12,6 +12,7 @@ export class ContinueParser implements IParser<any> {
   parse(input: string): ParseResult<Array<any>> {
     let next = input
     const values = new Array<any>()
+
     while (true) {
       const previous = next
       const result = this.parser.parse(next)
@@ -21,6 +22,8 @@ export class ContinueParser implements IParser<any> {
       } else {
         return new ParseSuccess(values, previous)
       }
+
+      if (next == '') return new ParseSuccess(values, next)
     }
   }
 }

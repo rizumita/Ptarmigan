@@ -1,13 +1,19 @@
 import { TypedValue } from '../parser/typedParser'
-import { ComplexType } from './complexType'
-import { CollectionType } from './CollectionType'
+import { CollectionType } from './collectionType'
+import { ValueType } from './valueType'
+import { Fake } from './fake'
+import { Generate } from './generate'
 
 export class DocumentType implements TypedValue {
-  typeName: any
-  collection: CollectionType | undefined
+  valueTypes: ValueType[]
+  fake: Fake | null
+  generate: Generate | null
+  collections: CollectionType[]
 
   constructor(value: any[]) {
-    this.typeName = value[0]
-    this.collection = value[1]
+    this.valueTypes = value.filter((v) => v instanceof ValueType)
+    this.fake = value.find((v): v is Fake => v instanceof Fake) ?? null
+    this.generate = value.find((v): v is Generate => v instanceof Generate) ?? null
+    this.collections = value.filter((v) => v instanceof CollectionType)
   }
 }

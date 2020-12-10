@@ -4,7 +4,7 @@ import { Constant } from './constant'
 import { Locale } from './locale'
 import { ValueType } from './valueType'
 import { ComplexType } from './complexType'
-import { CollectionType } from './CollectionType'
+import { CollectionType } from './collectionType'
 import { ProjectId } from './projectId'
 import { InvalidSchemaError } from './invalidSchemaError'
 

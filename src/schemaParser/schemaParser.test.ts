@@ -3,41 +3,38 @@ import { ParseSuccess } from '../parser/parseResult'
 import { Info } from '../schema/info'
 import { Constant } from '../schema/constant'
 import { ValueType } from '../schema/valueType'
-import { ComplexType } from '../schema/complexType'
-import { CollectionType } from '../schema/CollectionType'
+import { CollectionType } from '../schema/collectionType'
 import { DocumentType } from '../schema/documentType'
 import { Locale } from '../schema/locale'
 import { Fake } from '../schema/fake'
 import { Schema } from '../schema/schema'
 import { ProjectId } from '../schema/projectId'
+import { Generate } from '../schema/generate'
 
 describe('parse item', () => {
-  const schema = `
-info description = My Project
+  const schema = `info description = My Project
 
 projectId = MyProject
-const Ver = v1
+
+const myself = rizumita
 locale = ja
 
-type ID: int@unique
-type Name: string@name.firstName
-type Title: string@name.title
-
-type User: {
-  id: ID
-  name: Name
-}
-
-type Note: {
-  id: ID
-  title: Title
-}
-
 collection users {
-  fake 100
-  document User {
+  document {
+    firstName: string@name.firstName
+    lastName: string@name.lastName
+
     collection notes {
-      document Note
+      document {
+        title: string@name.title
+
+        fake 20
+      }
+    }
+
+    fake 100
+    generate {
+      "$myself" : { "firstName" : "Ryoichi", "lastName" : "Izumita" }
     }
   }
 }
@@ -49,29 +46,23 @@ collection users {
         new Schema([
           new Info(['description', 'My Project']),
           new ProjectId('MyProject'),
-          new Constant(['Ver', 'v1']),
+          new Constant(['myself', 'rizumita']),
           new Locale('ja'),
-          new ValueType(['ID', 'int', 'unique']),
-          new ValueType(['Name', 'string', 'name.firstName']),
-          new ValueType(['Title', 'string', 'name.title']),
-          new ComplexType([
-            'User',
-            [
-              ['id', 'ID'],
-              ['name', 'Name']
-            ]
-          ]),
-          new ComplexType([
-            'Note',
-            [
-              ['id', 'ID'],
-              ['title', 'Title']
-            ]
-          ]),
           new CollectionType([
             'users',
-            [new Fake(100), new DocumentType(['User', new CollectionType(['notes', [new DocumentType(['Note'])]])])]
-          ])
+            [
+              new DocumentType([
+                new ValueType(['firstName', 'string', 'name.firstName']),
+                new ValueType(['lastName', 'string', 'name.lastName']),
+                new Fake(100),
+                new Generate('{ "$myself": { "firstName" : "Ryoichi", "lastName" : "Izumita" } }'),
+                new CollectionType([
+                  'notes',
+                  [new DocumentType([new ValueType(['title', 'string', 'name.title']), new Fake(20)])],
+                ]),
+              ]),
+            ],
+          ]),
         ]),
         ''
       )

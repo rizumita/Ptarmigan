@@ -4,7 +4,6 @@ import { ParseSuccess } from '../parser/parseResult'
 import { Schema } from '../schema/schema'
 import { Generator } from './generator'
 import { ProjectId } from '../schema/projectId'
-import { InvalidSchemaError } from '../schema/invalidSchemaError'
 import { SchemaValidator } from '../schema/schemaValidator'
 
 export class GenerateAction {

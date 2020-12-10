@@ -4,15 +4,15 @@ import { ValueType } from '../schema/valueType'
 
 describe('Parsing value type', () => {
   test.each([
-    ['type Name: string', new ValueType(['Name', 'string'])],
-    ['type Name: string@name.first', new ValueType(['Name', 'string', 'name.first'])],
-    ['type Name:  string', new ValueType(['Name', 'string'])],
-    ['type Name:string', new ValueType(['Name', 'string'])]
+    ['name: string', new ValueType(['name', 'string'])],
+    ['name: string@name.first', new ValueType(['name', 'string', 'name.first'])],
+    ['name :  string', new ValueType(['name', 'string'])],
+    ['name:string', new ValueType(['name', 'string'])]
   ])('is succeeded', (input, value) => expect(valueTypeParser.parse(input)).toStrictEqual(new ParseSuccess(value, '')))
 
   test.each([
-    ['type Name:', '/^[\\w]+/ is not match', ''],
-    ['type Name string', 'expect: :', ' string']
+    ['name:', '/^[\\w]+/ is not match', ''],
+    ['name string', 'expect: :', 'string']
   ])('is failed', (input, message, next) =>
     expect(valueTypeParser.parse(input)).toStrictEqual(new ParseFailure(message, next))
   )

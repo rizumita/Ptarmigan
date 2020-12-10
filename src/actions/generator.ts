@@ -3,8 +3,7 @@ import { Schema } from '../schema/schema'
 import assert from 'assert'
 import { firestore } from 'firebase-admin/lib/firestore'
 import Firestore = firestore.Firestore
-import { CollectionType } from '../schema/CollectionType'
-import { InvalidSchemaError } from '../schema/invalidSchemaError'
+import { CollectionType } from '../schema/collectionType'
 import { Constant } from '../schema/constant'
 
 export class Generator {
@@ -29,23 +28,27 @@ export class Generator {
   }
 
   private async generateCollection(collection: CollectionType, basePath: string) {
-    if (collection.fake != null) {
-    }
+    for (const document of collection.documents) {
+      if (document.fake != null) {
+      }
 
-    if (collection.generate != null) {
-      const docs: { [id: string]: any } = collection.generate.json
+      if (document.generate != null) {
+        const docs: { [id: string]: any } = document.generate.json
 
-      for (let id in docs) {
-        const doc = docs[id]
-        id = Constant.isConstant(id) ? this.schema.getConstant(id) : id
-        await this.db
-          .collection(basePath + '/' + collection.path)
-          .doc(id)
-          .set(doc)
+        for (let id in docs) {
+          const doc = docs[id]
+          id = Constant.isConstant(id) ? this.schema.getConstant(id) : id
+          await this.db
+            .collection(basePath + '/' + collection.path)
+            .doc(id)
+            .set(doc)
 
-        if (collection.document.collection == null) return
+          if (document.collections.length == 0) continue
 
-        await this.generateCollection(collection.document.collection, basePath + '/' + collection.path + '/' + id)
+          for (let subCollection of document.collections) {
+            await this.generateCollection(subCollection, basePath + '/' + collection.path + '/' + id)
+          }
+        }
       }
     }
   }

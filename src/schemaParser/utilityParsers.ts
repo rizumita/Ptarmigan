@@ -3,9 +3,8 @@ import { IParser } from '../parser/parser'
 
 export const space = P.string(' ')
 export const spaces = P.many(space)
-export const lineFeed = P.string('\n')
 export const endOfLine = P.or([P.string('\n'), P.end()])
-export const whitespaces = P.many(P.or([space, lineFeed]))
+export const whitespaces = P.many(P.or([space, endOfLine]))
 export const word = P.matchRegex(/[\w\.]+/)
 export const emptyableWord = P.matchRegex(/\w*/)
 export const equal = P.string('=')
@@ -23,17 +22,7 @@ export function inParenthesis(parser: IParser<any>) {
 export function inCurlyBraces(parser: IParser<any>) {
   const dictStart = P.string('{')
   const dictEnd = P.string('}')
-  return P.unwrap(
-    P.unwrap(
-      P.seq([
-        P.ignore(dictStart),
-        P.option(P.ignore(whitespaces)),
-        parser,
-        P.option(P.ignore(whitespaces)),
-        P.ignore(dictEnd)
-      ])
-    )
-  )
+  return P.unwrap(P.unwrap(P.seq([P.ignore(dictStart), wrapWSs(parser), P.ignore(dictEnd)])))
 }
 
 export function dict() {

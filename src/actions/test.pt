@@ -5,29 +5,22 @@ projectId = MyProject
 const Ver = v1
 locale = ja
 
-type ID: int@unique
-type Name: string@name.firstName
-type Title: string@name.title
-
-type User: {
-  id: ID
-  name: Name
-}
-
-type Note: {
-  id: ID
-  title: Title
-}
-
 collection users {
-  document User {
-    collection note {
-      document Note
-    }
-  }
+  document {
+    firstName: string@name.firstName
+    lastName: string@name.lastName
 
-  fake 100
-  generate {
-    "rizumita" : { "id": 0, "name": "Ryoichi Izumita"}
+    collection note {
+      document {
+        title: string@name.title
+
+        fake 20
+      }
+    }
+
+    fake 100
+    generate {
+      "rizumita" : { "id": 0, "name": "Ryoichi Izumita"}
+    }
   }
 }
