@@ -1,33 +1,34 @@
-import { parse } from 'path'
-import { IParser, ParseIgnored } from './parser'
+import { IParser } from './parser'
 import { ParseResult, ParseSuccess } from './parseResult'
 
-export class ContinueParser implements IParser<any> {
-  parser: IParser<any>
+export class ContinueParser<T> implements IParser<T[]> {
+  parser: IParser<T>
 
-  constructor(parser: IParser<any>) {
+  constructor(parser: IParser<T>) {
     this.parser = parser
   }
 
-  parse(input: string): ParseResult<Array<any>> {
+  parse(input: string): ParseResult<T[]> {
+    let previous = input
     let next = input
-    const values = new Array<any>()
+    const values = new Array<T>()
 
-    while (true) {
-      const previous = next
+    do {
+      previous = next
       const result = this.parser.parse(next)
+
       if (result instanceof ParseSuccess) {
         if (result.value != null) values.push(result.value)
         next = result.next
       } else {
-        return new ParseSuccess(values, previous)
+        break
       }
+    } while (previous != next)
 
-      if (next == '') return new ParseSuccess(values, next)
-    }
+    return new ParseSuccess(values, next)
   }
 }
 
-export function many(parser: IParser<any>) {
+export function many<T>(parser: IParser<T>): IParser<T[]> {
   return new ContinueParser(parser)
 }

@@ -1,17 +1,19 @@
 import * as admin from 'firebase-admin'
+import { Document } from '../schema/document'
 import { Schema } from '../schema/schema'
 import assert from 'assert'
 import { firestore } from 'firebase-admin/lib/firestore'
 import Firestore = firestore.Firestore
-import { CollectionType } from '../schema/collectionType'
+import { Collection } from '../schema/collection'
 import { Constant } from '../schema/constant'
+import * as faker from 'faker'
+import DocumentData = firestore.DocumentData
 
 export class Generator {
   schema: Schema
   db: Firestore
 
   constructor(schema: Schema) {
-    console.log(schema)
     assert(schema.projectId?.value != null)
 
     this.schema = schema
@@ -21,32 +23,29 @@ export class Generator {
     this.db = admin.firestore()
   }
 
-  async generate() {
+  async generate(): Promise<void> {
+    // faker.setLocale(this.schema.locale.name)
+
     for (const collection of this.schema.collections) {
-      await this.generateCollection(collection, '')
+      await this.generateDocuments(collection, '')
     }
   }
 
-  private async generateCollection(collection: CollectionType, basePath: string) {
-    for (const document of collection.documents) {
-      if (document.fake != null) {
-      }
+  private async generateDocuments(collection: Collection, basePath: string) {
+    const collectionPath = basePath + '/' + collection.path
 
-      if (document.generate != null) {
-        const docs: { [id: string]: any } = document.generate.json
+    for (const document of collection.documents) {
+      for (const generate of document.generates) {
+        const docs: { [key: string]: any } = generate.docs()
 
         for (let id in docs) {
-          const doc = docs[id]
+          const docData = docs[id]
           id = Constant.isConstant(id) ? this.schema.getConstant(id) : id
-          await this.db
-            .collection(basePath + '/' + collection.path)
-            .doc(id)
-            .set(doc)
+          const doc = await this.db.collection(collectionPath).doc(id)
+          doc.set(docData)
 
-          if (document.collections.length == 0) continue
-
-          for (let subCollection of document.collections) {
-            await this.generateCollection(subCollection, basePath + '/' + collection.path + '/' + id)
+          for (const subCollection of document.collections) {
+            await this.generateDocuments(subCollection, collectionPath + '/' + id)
           }
         }
       }

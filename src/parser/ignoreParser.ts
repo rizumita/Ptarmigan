@@ -1,23 +1,6 @@
 import { IParser } from './iParser'
-import { ParseFailure, ParseIgnored, ParseResult, ParseSuccess } from './parseResult'
+import { map } from './mapParser'
 
-export class IgnoreParser implements IParser<any> {
-  parser: IParser<any>
-
-  constructor(parser: IParser<any>) {
-    this.parser = parser
-  }
-
-  parse(input: string): ParseResult<string> {
-    const result = this.parser.parse(input)
-
-    if (result instanceof ParseSuccess) {
-      return new ParseIgnored(result.next)
-    }
-    return result
-  }
-}
-
-export function ignore(parser: IParser<any>) {
-  return new IgnoreParser(parser)
+export function ignore<T>(parser: IParser<T>): IParser<null> {
+  return map(parser, _ => null)
 }

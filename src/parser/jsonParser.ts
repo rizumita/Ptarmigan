@@ -8,22 +8,19 @@ export class JSONParser implements IParser<JSON> {
     this.parser = parser
   }
 
-  parse(input: string): ParseResult<string> {
-    const result = this.parser.parse(input)
-
-    if (result instanceof ParseSuccess) {
-      try {
-        const json = JSON.parse(result.value)
-        return new ParseSuccess(json, result.next)
-      } catch (e) {
-        return new ParseFailure(e.message, result.next)
-      }
-    } else {
-      return result
+  parse(input: string): ParseResult<JSON> {
+    try {
+      const result = this.parser.parse(input)
+      const value = result.tryValue()
+      const json = JSON.parse(value)
+      return new ParseSuccess(json, result.next)
+    } catch (e) {
+      if (e instanceof ParseFailure) return e
+      return new ParseFailure(e.message, input)
     }
   }
 }
 
-export function json(parser: IParser<string>) {
+export function json(parser: IParser<string>): IParser<JSON> {
   return new JSONParser(parser)
 }

@@ -24,7 +24,7 @@ export class TypedParser<V, T extends TypedValue> implements IParser<T> {
         const value = new this.ctor(result.value)
         return new ParseSuccess(value, result.next)
       } catch (e) {
-        return new ParseFailure(this.ctor.toString() + 'can not pares: ' + result.value.toString(), result.next)
+        return new ParseFailure(this.ctor.toString() + 'can not parse: ' + result.value, result.next)
       }
     } else {
       return result

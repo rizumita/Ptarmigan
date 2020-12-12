@@ -1,47 +1,36 @@
 import { IParser } from './iParser'
-import { ParseFailure, ParseIgnored, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
-export class TripleParser implements IParser<[any, any, any]> {
-  fhs: IParser<any>
-  shs: IParser<any>
-  ths: IParser<any>
+export class TripleParser<S, T, U> implements IParser<[S, T, U]> {
+  fhs: IParser<S>
+  shs: IParser<T>
+  ths: IParser<U>
 
-  constructor(fhs: IParser<any>, shs: IParser<any>, ths: IParser<any>) {
+  constructor(fhs: IParser<S>, shs: IParser<T>, ths: IParser<U>) {
     this.fhs = fhs
     this.shs = shs
     this.ths = ths
   }
 
-  parse(input: string): ParseResult<any> {
-    const fresult = this.fhs.parse(input)
-
-    if (fresult instanceof ParseSuccess) {
-      const value1 = fresult.value
-      var next = fresult.next
-      const sresult = this.shs.parse(next)
-
-      if (sresult instanceof ParseSuccess || sresult instanceof ParseIgnored) {
-        const value2 = sresult.value
-        next = sresult.next
-        const tresult = this.ths.parse(next)
-
-        if (tresult instanceof ParseSuccess || tresult instanceof ParseIgnored) {
-          const value3 = tresult.value
-          next = tresult.next
-          const valueArray = [value1, value2, value3].filter((v) => v !== null)
-          return new ParseSuccess<any>(valueArray, next)
-        } else {
-          return new ParseFailure<any>(next + ' is not match', input)
-        }
+  parse(input: string): ParseResult<[S, T, U]> {
+    try {
+      const fResult = this.fhs.parse(input)
+      const value1 = fResult.tryValue()
+      const sResult = this.shs.parse(fResult.next)
+      const value2 = sResult.tryValue()
+      const tResult = this.ths.parse(sResult.next)
+      const value3 = tResult.tryValue()
+      return new ParseSuccess([value1, value2, value3], tResult.next)
+    } catch (e) {
+      if (e instanceof ParseFailure) {
+        return new ParseFailure(e.next + ' is not match', input)
       } else {
-        return new ParseFailure<any>(next + ' is not match', input)
+        throw e
       }
-    } else {
-      return new ParseFailure<any>((fresult as ParseFailure<any>).next + ' is not match', input)
     }
   }
 }
 
-export function triple(fps: IParser<any>, sps: IParser<any>, tps: IParser<any>) {
+export function triple<S, T, U>(fps: IParser<S>, sps: IParser<T>, tps: IParser<U>): IParser<[S, T, U]> {
   return new TripleParser(fps, sps, tps)
 }

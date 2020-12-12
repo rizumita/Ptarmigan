@@ -6,19 +6,26 @@ const Ver = v1
 locale = ja
 
 collection users {
-  document {
-    firstName: string@name.firstName
-    lastName: string@name.lastName
+  document User {
+    firstName: string%name.firstName
+    lastName: string%name.lastName
 
-    collection note {
-      document {
-        title: string@name.title
+    collection notes {
+      document Note {
+        title: string%name.title
+        tags: string%random.word[20]
+        ref: ref@/categories/Category
+        array: { name: string%random.word }[10]
+        dict: {
+          name: string%random.word
+          date: timestamp%date.recent
+        }
 
-        fake 20
+        fake = 20
       }
     }
 
-    fake 100
+    generate 20
     generate {
       "rizumita" : { "id": 0, "name": "Ryoichi Izumita"}
     }

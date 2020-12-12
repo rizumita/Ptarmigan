@@ -1,4 +1,8 @@
-export interface ParseResult<T> {}
+export interface ParseResult<T> {
+  next: string
+
+  tryValue(): T
+}
 
 export class ParseSuccess<T> implements ParseResult<T> {
   value: T
@@ -9,27 +13,25 @@ export class ParseSuccess<T> implements ParseResult<T> {
     this.next = next
   }
 
+  tryValue(): T {
+    return this.value
+  }
+
   public toString(): string {
     return 'Success(' + this.value + ', ' + this.next + ')'
   }
 }
 
-export class ParseIgnored<T> implements ParseResult<T> {
-  value: T | null = null
-  next: string
-
-  constructor(next: string) {
-    this.next = next
-  }
-}
-
-export class ParseFailure<T> implements ParseResult<T> {
-  message: string
+export class ParseFailure<T> extends Error implements ParseResult<T> {
   next: string
 
   constructor(message: string, next: string) {
-    this.message = message
+    super(message)
     this.next = next
+  }
+
+  tryValue(): T {
+    throw this
   }
 
   public toString(): string {

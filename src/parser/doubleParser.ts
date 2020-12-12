@@ -1,43 +1,32 @@
 import { IParser } from './iParser'
-import { ParseFailure, ParseIgnored, ParseResult, ParseSuccess } from './parseResult'
+import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
-export class DoubleParser implements IParser<any> {
-  lhs: IParser<any>
-  rhs: IParser<any>
+export class DoubleParser<S, T> implements IParser<[S, T]> {
+  lhs: IParser<S>
+  rhs: IParser<T>
 
-  constructor(lhs: IParser<any>, rhs: IParser<any>) {
+  constructor(lhs: IParser<S>, rhs: IParser<T>) {
     this.lhs = lhs
     this.rhs = rhs
   }
 
-  parse(input: string): ParseResult<any> {
-    const lresult: ParseResult<any> = this.lhs.parse(input)
-
-    if (lresult instanceof ParseSuccess || lresult instanceof ParseIgnored) {
-      const value1 = lresult.value
-      var next = lresult.next
-      const rresult = this.rhs.parse(next)
-
-      if (rresult instanceof ParseSuccess || rresult instanceof ParseIgnored) {
-        const value2 = rresult.value
-        return new ParseSuccess<any[]>(
-          [value1, value2].filter((v) => v !== null),
-          rresult.next
-        )
-      } else if (rresult instanceof ParseFailure) {
-        return new ParseFailure<any>(next + ' is not match', rresult.message)
+  parse(input: string): ParseResult<[S, T]> {
+    try {
+      const lResult = this.lhs.parse(input)
+      const lValue = lResult.tryValue()
+      const rResult = this.rhs.parse(lResult.next)
+      const rValue = rResult.tryValue()
+      return new ParseSuccess([lValue, rValue], rResult.next)
+    } catch (e) {
+      if (e instanceof ParseFailure) {
+        return e
       } else {
-        return new ParseFailure<any>(next + ' is not match', input)
+        throw e
       }
-    } else {
-      return new ParseFailure<any>(
-        (lresult as ParseFailure<any>).next + 'is not match',
-        (lresult as ParseFailure<any>).next
-      )
     }
   }
 }
 
-export function double(lps: IParser<any>, rps: IParser<any>) {
+export function double<S, T>(lps: IParser<S>, rps: IParser<T>): IParser<[S, T]> {
   return new DoubleParser(lps, rps)
 }

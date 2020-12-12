@@ -1,38 +1,32 @@
 import { IParser } from './iParser'
-import { ParseIgnored, ParseResult, ParseSuccess } from './parseResult'
+import { map } from './mapParser'
+import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
-export class UnwrapParser implements IParser<any> {
-  parser: IParser<any>
+// export class UnwrapParser implements IParser<unknown> {
+//   parser: IParser<unknown[]>
+//
+//   constructor(parser: IParser<unknown[]>) {
+//     this.parser = parser
+//   }
+//
+//   parse(input: string): ParseResult<unknown> {
+//     try {
+//       const result = this.parser.parse(input)
+//       const value = result.tryValue()
+//       return new ParseSuccess(value.length == 0 ? null : value.length == 1 ? value[0] : value, result.next)
+//     } catch (e) {
+//       if (e instanceof ParseFailure) {
+//         return e
+//       } else {
+//         throw e
+//       }
+//     }
+//   }
+// }
 
-  constructor(parser: IParser<any>) {
-    this.parser = parser
-  }
-
-  parse(input: string): ParseResult<any> {
-    const result = this.parser.parse(input)
-
-    if (result instanceof ParseSuccess) {
-      const value = result.value
-
-      if (value instanceof Array) {
-        if (value.length == 0) {
-          return new ParseIgnored<any>(result.next)
-        } else if (value.length == 1) {
-          return new ParseSuccess(value[0], result.next)
-        } else {
-          return new ParseSuccess(
-            value.filter((v) => v !== null),
-            result.next
-          )
-        }
-      } else if (value == null) {
-        return new ParseIgnored<any>(result.next)
-      }
-    }
-    return result
-  }
-}
-
-export function unwrap(parser: IParser<any>) {
-  return new UnwrapParser(parser)
+export function unwrap<T>(parser: IParser<T[]>): IParser<T> {
+  return map<T[], T>(parser, v => {
+    if (v.length == 1) return v[0]
+    throw Error(v.toString() + ' is not able to be unwrapped')
+  })
 }

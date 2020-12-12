@@ -1,10 +1,10 @@
 import { IParser } from './iParser'
 import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
-export class EndParser implements IParser<any> {
+export class EndParser implements IParser<null> {
   public constructor() {}
 
-  parse(input: string): ParseResult<string> {
+  parse(input: string): ParseResult<null> {
     if (input == '') {
       return new ParseSuccess(null, input)
     } else {
@@ -13,6 +13,6 @@ export class EndParser implements IParser<any> {
   }
 }
 
-export function end() {
+export function end(): IParser<null> {
   return new EndParser()
 }

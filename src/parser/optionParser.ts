@@ -1,25 +1,26 @@
 import { IParser } from './iParser'
-import { ParseFailure, ParseIgnored, ParseResult, ParseSuccess } from './parseResult'
+import { map } from './mapParser'
+import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 
-export class OptionParser implements IParser<[any]> {
-  ps: IParser<any>
+export class OptionParser<T> implements IParser<T | null> {
+  ps: IParser<T>
 
-  constructor(ps: IParser<any>) {
+  constructor(ps: IParser<T>) {
     this.ps = ps
   }
 
-  parse(input: string): ParseResult<any> {
-    const psresult = this.ps.parse(input)
-
-    if (psresult instanceof ParseSuccess || psresult instanceof ParseIgnored) {
-      const value = psresult.value
-      return new ParseSuccess<any>(value, psresult.next)
-    } else {
-      return new ParseSuccess<any>(null, input)
+  parse(input: string): ParseResult<T | null> {
+    try {
+      const result = this.ps.parse(input)
+      const value = result.tryValue()
+      return new ParseSuccess(value, result.next)
+    } catch (e) {
+      if (e instanceof ParseFailure) return new ParseSuccess(null, input)
+      throw e
     }
   }
 }
 
-export function option(parser: IParser<any>) {
+export function option<T>(parser: IParser<T>): IParser<T | null> {
   return new OptionParser(parser)
 }

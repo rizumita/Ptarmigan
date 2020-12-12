@@ -1,32 +1,27 @@
 import { IParser } from './iParser'
 import { ParseFailure, ParseResult, ParseSuccess } from './parseResult'
 import { toStringOrNumber } from './parserUtility'
-import { OnigRegExp, OnigScanner } from 'oniguruma'
 
 export class RegExpParser implements IParser<string> {
-  regexp: OnigRegExp
+  regexp: RegExp
 
   constructor(source: string) {
     const pattern = source == '^' ? source : '^' + source
-    this.regexp = new OnigRegExp(pattern)
+    this.regexp = new RegExp(pattern)
   }
 
-  parse(input: string): ParseResult<any> {
-    const searchArray = this.regexp.searchSync(input)
+  parse(input: string): ParseResult<string> {
+    const execArray = this.regexp.exec(input)
 
-    if (searchArray != null && searchArray.length > 0) {
-      const value = input.substring(searchArray[0].start, searchArray[0].end)
-      return new ParseSuccess(toStringOrNumber(value), input.substring(searchArray[0].length))
+    if (execArray != null && execArray.length > 0) {
+      const value = execArray[0]
+      return new ParseSuccess(value, input.substring(value.length))
     } else {
       return new ParseFailure('/' + this.regexp.source + '/ is not match', input)
     }
   }
 }
 
-export function match(source: string) {
-  return new RegExpParser(source)
-}
-
-export function matchRegex(regex: RegExp) {
+export function match(regex: RegExp): IParser<string> {
   return new RegExpParser(regex.source)
 }
