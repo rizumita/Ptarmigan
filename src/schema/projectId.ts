@@ -1,6 +1,6 @@
 import * as P from '../parser/parser'
 import { IParser } from '../parser/iParser'
-import { spaces } from '../parser/utilityParsers'
+import { endOfLine, spaces } from '../parser/utilityParsers'
 
 export class ProjectId {
   value: string
@@ -14,6 +14,6 @@ export class ProjectId {
     const separator = P.triple(spaces, P.string('='), spaces)
     const key = P.double(projectIdKey, separator)
     const projectIdPattern = P.match(/[\S]+/)
-    return P.map(P.triple(key, projectIdPattern, P.end()), v => new ProjectId(v[1]))
+    return P.map(P.triple(key, projectIdPattern, endOfLine), v => new ProjectId(v[1]))
   }
 }

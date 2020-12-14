@@ -2,13 +2,16 @@ import assert from 'assert'
 import { IParser } from '../../parser/iParser'
 import * as P from '../../parser/parser'
 import { wrapWSs } from '../../parser/utilityParsers'
+import { ArrayAttribute } from './arrayAttribute'
 import { Field } from './field'
 
 export class DictionaryFieldType {
   fields: Field[]
+  arrayAttribute: ArrayAttribute | null
 
-  constructor(fields: Field[]) {
+  constructor(fields: Field[], arrayAttribute: ArrayAttribute | null = null) {
     this.fields = fields
+    this.arrayAttribute = arrayAttribute
   }
 
   static parser(layer: number): IParser<DictionaryFieldType> {
@@ -17,10 +20,8 @@ export class DictionaryFieldType {
     const dictStart = P.ignore(P.string('{'))
     const dictEnd = P.ignore(P.string('}'))
     const contents = P.many(wrapWSs(Field.parser(layer)))
-    return P.map<Field[], DictionaryFieldType>(
-      P.map(P.triple(dictStart, contents, dictEnd), v => v[1]),
-      v => new DictionaryFieldType(v)
-    )
+    const type = P.map(P.triple(dictStart, contents, dictEnd), v => v[1])
+    return P.map(P.double(type, P.option(ArrayAttribute.parser)), v => new DictionaryFieldType(v[0], v[1]))
   }
 }
 

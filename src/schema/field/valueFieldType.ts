@@ -12,7 +12,7 @@ export class ValueFieldType {
   constructor(
     type: string,
     attribute: FakeAttribute | ReferenceAttribute | null,
-    arrayAttribute: ArrayAttribute | null
+    arrayAttribute: ArrayAttribute | null = null
   ) {
     this.type = type
     this.attribute = attribute

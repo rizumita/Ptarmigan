@@ -51,11 +51,11 @@ collection users {
           new Locale('ja'),
           new Collection('users', [
             new Document('User', [
-              new Field('firstName', new ValueFieldType('string', new FakeAttribute('name.firstName'), null)),
+              new Field('firstName', new ValueFieldType('string', new FakeAttribute('name.firstName'))),
               new Field(
                 'field',
                 new DictionaryFieldType([
-                  new Field('name', new ValueFieldType('string', new FakeAttribute('random.word'), null)),
+                  new Field('name', new ValueFieldType('string', new FakeAttribute('random.word'))),
                 ])
               ),
               new Generate(100),

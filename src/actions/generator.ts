@@ -20,6 +20,7 @@ export class Generator {
 
     process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080'
     admin.initializeApp({ projectId: schema.projectId.value })
+    process.stdout.write('Project id: ' + schema.projectId.value)
     this.db = admin.firestore()
   }
 
@@ -41,8 +42,8 @@ export class Generator {
         for (let id in docs) {
           const docData = docs[id]
           id = Constant.isConstant(id) ? this.schema.getConstant(id) : id
-          const doc = await this.db.collection(collectionPath).doc(id)
-          doc.set(docData)
+          const doc = this.db.collection(collectionPath).doc(id)
+          await doc.set(docData)
 
           for (const subCollection of document.collections) {
             await this.generateDocuments(subCollection, collectionPath + '/' + id)

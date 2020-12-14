@@ -17,6 +17,15 @@ describe('DictionaryFieldType', () => {
         new Field('date', new ValueFieldType('timestamp', new FakeAttribute('date.recent'), new ArrayAttribute(10))),
       ]),
     ],
+    [
+      `{
+          name: string%random.word
+        }[]`,
+      new DictionaryFieldType(
+        [new Field('name', new ValueFieldType('string', new FakeAttribute('random.word'), null))],
+        new ArrayAttribute(0)
+      ),
+    ],
   ])('pares', (input, value) =>
     expect(DictionaryFieldType.parser(2).parse(input)).toStrictEqual(new ParseSuccess(value, ''))
   )
