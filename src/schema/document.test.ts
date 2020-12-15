@@ -1,12 +1,15 @@
 import { ParseSuccess } from '../parser/parseResult'
 import { Collection } from './collection'
 import { Document } from './document'
+import { DocumentId } from './documentId'
 import { ArrayAttribute } from './field/arrayAttribute'
+import { AutoIncrementAttribute } from './field/autoIncrementAttribute'
 import { DictionaryFieldType } from './field/dictionaryFieldType'
-import { FakeAttribute } from './field/fakeAttribute'
+import { FakerAttribute } from './field/fakerAttribute'
 import { Field } from './field/field'
 import { ValueFieldType } from './field/valueFieldType'
-import { Generate } from './generate'
+import { FakeGenerate } from './generate/fakeGenerate'
+import { JsonGenerate } from './generate/jsonGenerate'
 
 describe('Document', () => {
   test.each([
@@ -16,31 +19,29 @@ describe('Document', () => {
     ['document User { }', new Document('User', [])],
     [
       `document User {
-        name: string%name.firstName
-        tags: string%random.word[20]
+        name: string%{{name.firstName}}
+        tags: string%{{random.word}}[20]
         dict: {
-          name: string%random.word
+          name: string%{{random.word}}
         }
         generate 20
-        generate {
-          "rizumita" : { "id": 0, "name": "Ryoichi Izumita"}
-        }
+        generate [
+          { "id": 0, "name": "Ryoichi Izumita"}
+        ]
         collection notes {
           document Note
         }
       }`,
       new Document('User', [
-        new Field('name', new ValueFieldType('string', new FakeAttribute('name.firstName'), null)),
-        new Field('tags', new ValueFieldType('string', new FakeAttribute('random.word'), new ArrayAttribute(20))),
+        new Field('name', new ValueFieldType('string', new FakerAttribute('name.firstName'))),
+        new Field('tags', new ValueFieldType('string', new FakerAttribute('random.word')), new ArrayAttribute(20)),
         new Field(
           'dict',
-          new DictionaryFieldType([
-            new Field('name', new ValueFieldType('string', new FakeAttribute('random.word'), null)),
-          ])
+          new DictionaryFieldType([new Field('name', new ValueFieldType('string', new FakerAttribute('random.word')))])
         ),
-        new Generate(20),
-        new Generate('{ "rizumita" : { "id": 0, "name": "Ryoichi Izumita"} }'),
-        new Collection('notes', [new Document('Note', [])]),
+        new FakeGenerate(20),
+        new JsonGenerate('[ { "id": 0, "name": "Ryoichi Izumita"} ]'),
+        new Collection('notes', new DocumentId(new AutoIncrementAttribute(1)), [new Document('Note', [])]),
       ]),
     ],
   ])('parse', (input, value) => expect(Document.parser(2).parse(input)).toStrictEqual(new ParseSuccess(value, '')))

@@ -27,7 +27,7 @@ export class Schema implements TypedValue {
   getConstant(value: string) {
     const result = this.constants.find(v => v.key == value)?.value
 
-    if (result == null) {
+    if (result == null || result == '') {
       throw new InvalidSchemaError(value + "isn't exist in constants.")
     }
 

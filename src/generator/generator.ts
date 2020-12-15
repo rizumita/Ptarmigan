@@ -1,13 +1,9 @@
 import * as admin from 'firebase-admin'
-import { Document } from '../schema/document'
 import { Schema } from '../schema/schema'
 import assert from 'assert'
 import { firestore } from 'firebase-admin/lib/firestore'
 import Firestore = firestore.Firestore
 import { Collection } from '../schema/collection'
-import { Constant } from '../schema/constant'
-import * as faker from 'faker'
-import DocumentData = firestore.DocumentData
 
 export class Generator {
   schema: Schema
@@ -20,11 +16,14 @@ export class Generator {
 
     process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080'
     admin.initializeApp({ projectId: schema.projectId.value })
-    process.stdout.write('Project id: ' + schema.projectId.value)
+
+    process.stdout.write('Project id: ' + schema.projectId.value + '\n')
+
     this.db = admin.firestore()
   }
 
   async generate(): Promise<void> {
+    process.stdout.write('generating...\n')
     // faker.setLocale(this.schema.locale.name)
 
     for (const collection of this.schema.collections) {
@@ -37,13 +36,17 @@ export class Generator {
 
     for (const document of collection.documents) {
       for (const generate of document.generates) {
-        const docs: { [key: string]: any } = generate.docs()
+        const idLength = collection.documentId.length
+        const docLength = generate.length
+        const length = Math.min(idLength, docLength)
 
-        for (let id in docs) {
-          const docData = docs[id]
-          id = Constant.isConstant(id) ? this.schema.getConstant(id) : id
+        const docs: { [key: string]: any }[] = generate.docs(document, this.schema)
+
+        for (let i = 0; i < length; i++) {
+          const id = collection.documentId.id(v => this.schema.getConstant(v))
+          const data = docs[i]
           const doc = this.db.collection(collectionPath).doc(id)
-          await doc.set(docData)
+          await doc.set(data)
 
           for (const subCollection of document.collections) {
             await this.generateDocuments(subCollection, collectionPath + '/' + id)

@@ -1,6 +1,6 @@
 import { SchemaFile } from '../schemaFile'
 import { Schema } from '../schema/schema'
-import { Generator } from './generator'
+import { Generator } from '../generator/generator'
 import { ProjectId } from '../schema/projectId'
 import { SchemaValidator } from '../schema/schemaValidator'
 
@@ -20,7 +20,11 @@ export class GenerateAction {
       SchemaValidator.validate(schema)
       await new Generator(schema).generate()
     } catch (e) {
+      console.log(e)
       process.stderr.write(e.toString())
+      process.stderr.write('name:', e.name)
+      process.stderr.write('message:', e.message)
+      process.stderr.write('stack:', e.stack)
     }
   }
 }

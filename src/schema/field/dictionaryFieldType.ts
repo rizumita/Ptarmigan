@@ -2,16 +2,14 @@ import assert from 'assert'
 import { IParser } from '../../parser/iParser'
 import * as P from '../../parser/parser'
 import { wrapWSs } from '../../parser/utilityParsers'
-import { ArrayAttribute } from './arrayAttribute'
+import { DataGeneratable } from './dataGeneratable'
 import { Field } from './field'
 
-export class DictionaryFieldType {
+export class DictionaryFieldType implements DataGeneratable {
   fields: Field[]
-  arrayAttribute: ArrayAttribute | null
 
-  constructor(fields: Field[], arrayAttribute: ArrayAttribute | null = null) {
+  constructor(fields: Field[]) {
     this.fields = fields
-    this.arrayAttribute = arrayAttribute
   }
 
   static parser(layer: number): IParser<DictionaryFieldType> {
@@ -21,7 +19,22 @@ export class DictionaryFieldType {
     const dictEnd = P.ignore(P.string('}'))
     const contents = P.many(wrapWSs(Field.parser(layer)))
     const type = P.map(P.triple(dictStart, contents, dictEnd), v => v[1])
-    return P.map(P.double(type, P.option(ArrayAttribute.parser)), v => new DictionaryFieldType(v[0], v[1]))
+    return P.map(type, v => new DictionaryFieldType(v))
+  }
+
+  get length(): number {
+    return Infinity
+  }
+
+  data(): unknown {
+    let data: { [key: string]: unknown } = {}
+
+    for (const field of this.fields) {
+      const fieldData = field.data
+      data = { ...data, ...fieldData }
+    }
+
+    return data
   }
 }
 

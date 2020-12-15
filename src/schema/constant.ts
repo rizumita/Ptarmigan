@@ -1,7 +1,6 @@
-import { isNotNull } from '../parser/filterParser'
 import * as P from '../parser/parser'
 import { IParser } from '../parser/iParser'
-import { equal, name, spaces, word } from '../parser/utilityParsers'
+import { spaces } from '../parser/utilityParsers'
 
 export class Constant {
   key: string
@@ -10,10 +9,6 @@ export class Constant {
   constructor(key: string, value: string) {
     this.key = '$' + key
     this.value = value
-  }
-
-  static isConstant(value: string) {
-    return value.startsWith('$')
   }
 
   static get parser(): IParser<Constant> {

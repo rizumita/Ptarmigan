@@ -1,15 +1,12 @@
 import { IParser } from '../../parser/iParser'
-import { isNotNull } from '../../parser/parser'
 import * as P from '../../parser/parser'
-import { InvalidSchemaError } from '../invalidSchemaError'
+import { DataGeneratable } from './dataGeneratable'
 
-export class ReferenceAttribute {
+export class ReferenceAttribute implements DataGeneratable {
   path: string[]
 
   constructor(pathString: string) {
-    const path = pathString.split('/').filter(value => value.length >= 1)
-    if (path.length % 2 != 0) throw new InvalidSchemaError('ReferenceAttribute needs document reference: ' + pathString)
-    this.path = path
+    this.path = pathString.split('/').filter(value => value.length >= 1)
   }
 
   static get parser(): IParser<ReferenceAttribute> {
@@ -17,5 +14,13 @@ export class ReferenceAttribute {
       P.map(P.double(P.ignore(P.string('@')), P.match(/[/\w]+/)), v => v[1]),
       v => new ReferenceAttribute(v)
     )
+  }
+
+  get length(): number {
+    return 1
+  }
+
+  data(): unknown {
+    return null
   }
 }

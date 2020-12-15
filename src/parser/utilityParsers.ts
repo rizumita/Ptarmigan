@@ -10,10 +10,13 @@ export const equal = P.string('=')
 export const sentence = P.match(/[\w ]+/)
 export const name = P.match(/[\w]+/)
 
-export function inCurlyBraces<S>(parser: IParser<S>): IParser<S> {
-  const dictStart = P.string('{')
-  const dictEnd = P.string('}')
-  return P.map(P.triple(P.ignore(dictStart), parser, P.ignore(dictEnd)), v => v[1])
+export const inCurlyBraces = <T>(parser: IParser<T>): IParser<T> => inContent(P.string('{'), parser, P.string('}'))
+export const inBrackets = <T>(parser: IParser<T>): IParser<T> => inContent(P.string('['), parser, P.string(']'))
+export const inParentheses = <T>(parser: IParser<T>): IParser<T> => inContent(P.string('('), parser, P.string(')'))
+export const inWhitespaces = <T>(parser: IParser<T>): IParser<T> => inContent(whitespaces, parser, whitespaces)
+
+export function inContent<S, T, U>(start: IParser<S>, content: IParser<T>, end: IParser<U>): IParser<T> {
+  return P.map(P.triple(start, content, end), v => v[1])
 }
 
 export function wrapWSs<S>(parser: IParser<S>): IParser<S> {

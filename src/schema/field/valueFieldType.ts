@@ -1,38 +1,42 @@
 import { IParser } from '../../parser/iParser'
 import * as P from '../../parser/parser'
-import { ArrayAttribute } from './arrayAttribute'
-import { FakeAttribute } from './fakeAttribute'
+import { AutoIncrementAttribute } from './autoIncrementAttribute'
+import { DataGeneratable } from './dataGeneratable'
+import { EnumeratedAttribute } from './enumeratedAttribute'
+import { FakerAttribute } from './fakerAttribute'
 import { ReferenceAttribute } from './referenceAttribute'
 
-export class ValueFieldType {
+export class ValueFieldType implements DataGeneratable {
   type: string
-  attribute: FakeAttribute | ReferenceAttribute | null
-  arrayAttribute: ArrayAttribute | null
+  attribute: FakerAttribute | ReferenceAttribute | AutoIncrementAttribute | EnumeratedAttribute | null
 
   constructor(
     type: string,
-    attribute: FakeAttribute | ReferenceAttribute | null,
-    arrayAttribute: ArrayAttribute | null = null
+    attribute: FakerAttribute | AutoIncrementAttribute | ReferenceAttribute | EnumeratedAttribute | null = null
   ) {
     this.type = type
     this.attribute = attribute
-    this.arrayAttribute = arrayAttribute
   }
 
   static get parser(): IParser<ValueFieldType> {
-    return P.map<[string, FakeAttribute | ReferenceAttribute | null, ArrayAttribute | null], ValueFieldType>(
-      P.triple(
-        P.match(/\w+/),
-        P.option(P.or([FakeAttribute.parser, ReferenceAttribute.parser])),
-        P.option(ArrayAttribute.parser)
-      ),
-      v => new ValueFieldType(v[0], v[1] ?? null, v[2] ?? null)
+    const percentContent = P.map(
+      P.double(P.string('%'), P.or([FakerAttribute.parser, AutoIncrementAttribute.parser, EnumeratedAttribute.parser])),
+      v => v[1]
+    )
+    return P.map<
+      [string, FakerAttribute | AutoIncrementAttribute | ReferenceAttribute | EnumeratedAttribute | null],
+      ValueFieldType
+    >(
+      P.double(P.match(/\w+/), P.option(P.or([percentContent, ReferenceAttribute.parser]))),
+      v => new ValueFieldType(v[0], v[1] ?? null)
     )
   }
-}
 
-// setFakeTo(doc: { [id: string]: unknown }): void {
-//   const fake = this.valueType.getFake()
-//   if (faker == null) return
-// doc[this.name] = fake
-// }
+  get length(): number {
+    return this.attribute?.length ?? 0
+  }
+
+  data(): unknown {
+    return this.attribute?.data() ?? null
+  }
+}
