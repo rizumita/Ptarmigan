@@ -35,7 +35,8 @@ export class Field {
 
   get data(): unknown {
     if (this.arrayAttribute != null) {
-      const length = Math.min(this.type.length, this.arrayAttribute.length)
+      let length = Math.min(this.type.length, this.arrayAttribute.length == 0 ? Infinity : this.arrayAttribute.length)
+      if (length === Infinity) length = 0
 
       if (this.type instanceof ValueFieldType) {
         const result: (string | number | boolean)[] = []
