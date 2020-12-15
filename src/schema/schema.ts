@@ -2,6 +2,7 @@ import * as P from '../parser/parser'
 import { IParser } from '../parser/iParser'
 import { TypedValue } from '../parser/typedParser'
 import { wrapWSs } from '../parser/utilityParsers'
+import { DocumentType } from './documentType'
 import { Info } from './info'
 import { Constant } from './constant'
 import { Locale } from './locale'
@@ -14,13 +15,15 @@ export class Schema implements TypedValue {
   projectId: ProjectId | null
   constants: Constant[]
   locale: Locale
+  documentType: DocumentType[]
   collections: Collection[]
 
-  constructor(value: (Info | ProjectId | Constant | Locale | Collection)[]) {
+  constructor(value: (Info | ProjectId | Constant | Locale | DocumentType | Collection)[]) {
     this.infos = value.filter((v): v is Info => v instanceof Info)
     this.projectId = value.find((v): v is ProjectId => v instanceof ProjectId) ?? null
     this.constants = value.filter((v): v is Constant => v instanceof Constant)
     this.locale = value.find((v): v is Locale => v instanceof Locale) ?? new Locale('en')
+    this.documentType = value.filter((v): v is DocumentType => v instanceof DocumentType)
     this.collections = value.filter((v): v is Collection => v instanceof Collection)
   }
 
@@ -35,11 +38,12 @@ export class Schema implements TypedValue {
   }
 
   static get parser(): IParser<Schema> {
-    const content = P.or<Info | ProjectId | Constant | Locale | Collection>([
+    const content = P.or<Info | ProjectId | Constant | Locale | DocumentType | Collection>([
       Info.parser,
       ProjectId.parser,
       Constant.parser,
       Locale.parser,
+      DocumentType.parser,
       Collection.parser(7),
     ])
     const contents = P.many(wrapWSs(content))

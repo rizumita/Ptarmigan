@@ -3,9 +3,11 @@ import { Collection } from './collection'
 import { Constant } from './constant'
 import { Document } from './document'
 import { DocumentId } from './documentId'
+import { DocumentType } from './documentType'
 import { ArrayAttribute } from './field/arrayAttribute'
 import { AutoIncrementAttribute } from './field/autoIncrementAttribute'
 import { DictionaryFieldType } from './field/dictionaryFieldType'
+import { EnumeratedAttribute } from './field/enumeratedAttribute'
 import { FakerAttribute } from './field/fakerAttribute'
 import { Field } from './field/field'
 import { ValueFieldType } from './field/valueFieldType'
@@ -25,13 +27,16 @@ projectId = MyProject
 const myself = rizumita
 locale = ja
 
+type User = {
+  firstName: string%{{name.firstName}}
+  field: {
+    name: string%{{random.word}}
+  }
+}
+
 collection users {
-  id: myself
+  id: $myself
   document User {
-    firstName: string%{{name.firstName}}
-    field: {
-      name: string%{{random.word}}
-    }
     collection notes {
       id: {{random.uuid}}
       document Note {
@@ -55,17 +60,19 @@ collection users {
           new ProjectId('MyProject'),
           new Constant('myself', 'rizumita'),
           new Locale('ja'),
-          new Collection('users', new DocumentId(new AutoIncrementAttribute(10)), [
+          new DocumentType('User', [
+            new Field('firstName', new ValueFieldType('string', new FakerAttribute('name.firstName'))),
+            new Field(
+              'field',
+              new DictionaryFieldType([
+                new Field('name', new ValueFieldType('string', new FakerAttribute('random.word'))),
+              ])
+            ),
+          ]),
+          new Collection('users', new DocumentId(new EnumeratedAttribute(['$myself'])), [
             new Document('User', [
-              new Field('firstName', new ValueFieldType('string', new FakerAttribute('name.firstName'))),
-              new Field(
-                'field',
-                new DictionaryFieldType([
-                  new Field('name', new ValueFieldType('string', new FakerAttribute('random.word'))),
-                ])
-              ),
               new FakeGenerate(100),
-              new JsonGenerate('{ "rizumita" : { "firstName" : "Ryoichi", "lastName" : "Izumita" } }'),
+              new JsonGenerate('[ { "firstName" : "Ryoichi", "lastName" : "Izumita" } ]'),
               new Collection('notes', new DocumentId(new FakerAttribute('random.uuid')), [
                 new Document('Note', [
                   new Field(

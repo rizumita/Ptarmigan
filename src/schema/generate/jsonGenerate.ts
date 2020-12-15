@@ -2,9 +2,8 @@ import assert from 'assert'
 import * as P from '../../parser/parser'
 import { IParser } from '../../parser/iParser'
 import { inBrackets, inWhitespaces, spaces } from '../../parser/utilityParsers'
-import { Document } from '../document'
 import { DocumentGeneratable } from '../documentGeneratable'
-import { Schema } from '../schema'
+import { Field } from '../field/field'
 
 export class JsonGenerate implements DocumentGeneratable {
   contents: { [key: string]: unknown }[]
@@ -13,7 +12,7 @@ export class JsonGenerate implements DocumentGeneratable {
     this.contents = JSON.parse(value)
   }
 
-  docs(document: Document, schema: Schema): { [key: string]: unknown }[] {
+  docs(fields: Field[]): { [key: string]: unknown }[] {
     return this.contents
   }
 

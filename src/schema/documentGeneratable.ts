@@ -1,8 +1,7 @@
-import { Document } from './document'
-import { Schema } from './schema'
+import { Field } from './field/field'
 
 export interface DocumentGeneratable {
   length: number
 
-  docs(document: Document, schema: Schema): { [key: string]: unknown }[]
+  docs(fields: Field[]): { [key: string]: unknown }[]
 }

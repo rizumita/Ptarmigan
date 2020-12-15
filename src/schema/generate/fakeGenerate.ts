@@ -3,6 +3,7 @@ import { IParser } from '../../parser/iParser'
 import { spaces } from '../../parser/utilityParsers'
 import { Document } from '../document'
 import { DocumentGeneratable } from '../documentGeneratable'
+import { Field } from '../field/field'
 import { Schema } from '../schema'
 
 export class FakeGenerate implements DocumentGeneratable {
@@ -12,13 +13,13 @@ export class FakeGenerate implements DocumentGeneratable {
 
   length: number
 
-  docs(document: Document, schema: Schema): { [p: string]: unknown }[] {
+  docs(fields: Field[]): { [p: string]: unknown }[] {
     const result: { [key: string]: unknown }[] = []
 
     for (let i = 0; i < this.length; i++) {
       const data: { [key: string]: unknown } = {}
 
-      for (const field of document.fields) {
+      for (const field of fields) {
         data[field.name] = field.data
       }
 

@@ -40,7 +40,8 @@ export class Generator {
         const docLength = generate.length
         const length = Math.min(idLength, docLength)
 
-        const docs: { [key: string]: any }[] = generate.docs(document, this.schema)
+        const predefinedFields = this.schema.documentType.find(value => value.name == document.name)?.fields ?? []
+        const docs: { [key: string]: any }[] = generate.docs(document.fields.concat(predefinedFields))
 
         for (let i = 0; i < length; i++) {
           const id = collection.documentId.id(v => this.schema.getConstant(v))
