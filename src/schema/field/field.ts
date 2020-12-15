@@ -33,26 +33,28 @@ export class Field {
     )
   }
 
-  get data(): unknown {
+  get data(): { [key: string]: unknown } {
+    const result: { [key: string]: unknown } = {}
     if (this.arrayAttribute != null) {
       let length = Math.min(this.type.length, this.arrayAttribute.length == 0 ? Infinity : this.arrayAttribute.length)
       if (length === Infinity) length = 0
 
       if (this.type instanceof ValueFieldType) {
-        const result: (string | number | boolean)[] = []
+        const data: (string | number | boolean)[] = []
         for (let i = 0; i < length; i++) {
-          result.push(this.type.data())
+          data.push(this.type.data())
         }
-        return result
+        result[this.name] = data
       } else {
-        const result: { [key: string]: unknown }[] = []
+        const data: { [key: string]: unknown }[] = []
         for (let i = 0; i < length; i++) {
-          result.push(this.type.data())
+          data.push(this.type.data())
         }
-        return result
+        result[this.name] = data
       }
     } else {
-      return this.type.data()
+      result[this.name] = this.type.data()
     }
+    return result
   }
 }

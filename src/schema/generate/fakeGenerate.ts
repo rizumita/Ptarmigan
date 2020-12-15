@@ -1,10 +1,8 @@
 import * as P from '../../parser/parser'
 import { IParser } from '../../parser/iParser'
 import { spaces } from '../../parser/utilityParsers'
-import { Document } from '../document'
 import { DocumentGeneratable } from '../documentGeneratable'
 import { Field } from '../field/field'
-import { Schema } from '../schema'
 
 export class FakeGenerate implements DocumentGeneratable {
   constructor(count: number) {
@@ -18,11 +16,7 @@ export class FakeGenerate implements DocumentGeneratable {
 
     for (let i = 0; i < this.length; i++) {
       const data: { [key: string]: unknown } = {}
-
-      for (const field of fields) {
-        data[field.name] = field.data
-      }
-
+      fields.forEach(value => Object.entries(value.data).forEach(([key, value]) => (data[key] = value)))
       result.push(data)
     }
 

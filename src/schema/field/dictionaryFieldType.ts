@@ -28,21 +28,7 @@ export class DictionaryFieldType implements DataGeneratable {
 
   data(): { [key: string]: unknown } {
     const data: { [key: string]: unknown } = {}
-
-    for (const field of this.fields) {
-      data[field.name] = field.data
-    }
-
+    this.fields.forEach(value => Object.entries(value.data).forEach(([key, value]) => (data[key] = value)))
     return data
   }
 }
-
-// setFakeTo(doc: { [id: string]: any }): void {
-//   const dict: { [key: string]: unknown } = {}
-//
-// for (const valueType of this.valueTypes) {
-//   dict[valueType.name] = valueType.valueType.getFake()
-// }
-//
-// doc[this.name] = dict
-// }
