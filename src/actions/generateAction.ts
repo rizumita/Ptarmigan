@@ -20,7 +20,6 @@ export class GenerateAction {
       SchemaValidator.validate(schema)
       await new Generator(schema).generate()
     } catch (e) {
-      console.log(e)
       process.stderr.write(e.toString())
       process.stderr.write('name:', e.name)
       process.stderr.write('message:', e.message)

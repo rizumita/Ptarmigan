@@ -36,7 +36,15 @@ export class ValueFieldType implements DataGeneratable {
     return this.attribute?.length ?? 0
   }
 
-  data(): unknown {
-    return this.attribute?.data() ?? null
+  data(): string | boolean | number {
+    const data = this.attribute?.data() ?? null
+    if (data != null) {
+      if (this.type === 'bool') {
+        return Boolean(data)
+      } else if (this.type === 'int') {
+        return Number(data)
+      }
+    }
+    return String(data)
   }
 }

@@ -26,12 +26,11 @@ export class DictionaryFieldType implements DataGeneratable {
     return Infinity
   }
 
-  data(): unknown {
-    let data: { [key: string]: unknown } = {}
+  data(): { [key: string]: unknown } {
+    const data: { [key: string]: unknown } = {}
 
     for (const field of this.fields) {
-      const fieldData = field.data
-      data = { ...data, ...fieldData }
+      data[field.name] = field.data
     }
 
     return data

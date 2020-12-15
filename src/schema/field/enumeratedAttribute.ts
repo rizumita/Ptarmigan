@@ -5,6 +5,7 @@ import { DataGeneratable } from './dataGeneratable'
 
 export class EnumeratedAttribute implements DataGeneratable {
   values: (string | number)[]
+  private index = 0
 
   constructor(values: (string | number)[]) {
     this.values = values
@@ -15,12 +16,12 @@ export class EnumeratedAttribute implements DataGeneratable {
   }
 
   data(): string | number {
-    const value = this.values.shift()
-    if (value != null) {
-      return value
-    } else {
-      throw Error('Out of range')
+    if (this.index >= this.length) {
+      this.index = 0
     }
+    const i = this.index
+    this.index++
+    return this.values[i]
   }
 
   static get parser(): IParser<EnumeratedAttribute> {
