@@ -27,7 +27,7 @@ describe('Collection', () => {
     field: {
       name: string%{{random.word}}
     }
-    collection notes {
+    collection notes {  // comment
       id: {{random.uuid}}
       document Note {
         tags: string%{{random.word}}[20]
@@ -50,7 +50,7 @@ describe('Collection', () => {
             ])
           ),
           new FakeGenerate(100),
-          new JsonGenerate('[ "firstName" : "Ryoichi", "lastName" : "Izumita" } ]'),
+          new JsonGenerate('[ { "firstName" : "Ryoichi", "lastName" : "Izumita" } ]'),
           new Collection('notes', new DocumentId(new FakerAttribute('random.uuid')), [
             new Document('Note', [
               new Field(

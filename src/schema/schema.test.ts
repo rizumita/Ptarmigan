@@ -1,11 +1,11 @@
 import { ParseSuccess } from '../parser/parseResult'
 import { Collection } from './collection'
+import { Comment } from './comment'
 import { Constant } from './constant'
 import { Document } from './document'
 import { DocumentId } from './documentId'
 import { DocumentType } from './documentType'
 import { ArrayAttribute } from './field/arrayAttribute'
-import { AutoIncrementAttribute } from './field/autoIncrementAttribute'
 import { DictionaryFieldType } from './field/dictionaryFieldType'
 import { EnumeratedAttribute } from './field/enumeratedAttribute'
 import { FakerAttribute } from './field/fakerAttribute'
@@ -34,13 +34,14 @@ type User = {
   }
 }
 
+// comment
 collection users {
   id: $myself
   document User {
     collection notes {
       id: {{random.uuid}}
       document Note {
-        tags: string%{{random.word}}[20]
+        tags: string%{{random.word}}[20]  // comment
       }
     }
 
@@ -69,6 +70,7 @@ collection users {
               ])
             ),
           ]),
+          new Comment('This is comm'),
           new Collection('users', new DocumentId(new EnumeratedAttribute(['$myself'])), [
             new Document('User', [
               new FakeGenerate(100),

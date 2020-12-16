@@ -9,6 +9,7 @@ export class JsonGenerate implements DocumentGeneratable {
   contents: { [key: string]: unknown }[]
 
   constructor(value: string) {
+    console.log(value)
     this.contents = JSON.parse(value)
   }
 

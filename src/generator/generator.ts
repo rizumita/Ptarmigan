@@ -44,7 +44,7 @@ export class Generator {
         const docs: { [key: string]: any }[] = generate.docs(document.fields.concat(predefinedFields))
 
         for (let i = 0; i < length; i++) {
-          const id = collection.documentId.id(v => this.schema.getConstant(v))
+          const id = collection.documentId.id(v => String(this.schema.getConstant(v)))
           const data = docs[i]
           const doc = this.db.collection(collectionPath).doc(id)
           await doc.set(data)

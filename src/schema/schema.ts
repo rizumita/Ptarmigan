@@ -1,7 +1,8 @@
 import * as P from '../parser/parser'
 import { IParser } from '../parser/iParser'
 import { TypedValue } from '../parser/typedParser'
-import { wrapWSs } from '../parser/utilityParsers'
+import { inWhitespaces } from '../parser/utilityParsers'
+import { Comment } from './comment'
 import { DocumentType } from './documentType'
 import { Info } from './info'
 import { Constant } from './constant'
@@ -18,7 +19,7 @@ export class Schema implements TypedValue {
   documentType: DocumentType[]
   collections: Collection[]
 
-  constructor(value: (Info | ProjectId | Constant | Locale | DocumentType | Collection)[]) {
+  constructor(value: ContentType[]) {
     this.infos = value.filter((v): v is Info => v instanceof Info)
     this.projectId = value.find((v): v is ProjectId => v instanceof ProjectId) ?? null
     this.constants = value.filter((v): v is Constant => v instanceof Constant)
@@ -27,7 +28,7 @@ export class Schema implements TypedValue {
     this.collections = value.filter((v): v is Collection => v instanceof Collection)
   }
 
-  getConstant(value: string) {
+  getConstant(value: string): string | number {
     const result = this.constants.find(v => v.key == value)?.value
 
     if (result == null || result == '') {
@@ -38,7 +39,7 @@ export class Schema implements TypedValue {
   }
 
   static get parser(): IParser<Schema> {
-    const content = P.or<Info | ProjectId | Constant | Locale | DocumentType | Collection>([
+    const content = P.or<ContentType>([
       Info.parser,
       ProjectId.parser,
       Constant.parser,
@@ -46,7 +47,11 @@ export class Schema implements TypedValue {
       DocumentType.parser,
       Collection.parser(7),
     ])
-    const contents = P.many(wrapWSs(content))
+    const contents = P.many(
+      P.or<ContentType>([inWhitespaces(content), Comment.parser])
+    )
     return P.map(P.double(contents, P.end()), v => new Schema(v[0]))
   }
 }
+
+type ContentType = Info | ProjectId | Constant | Locale | DocumentType | Collection | Comment

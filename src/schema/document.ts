@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { IParser } from '../parser/iParser'
-import { inContent, inCurlyBraces, inWhitespaces, spaces, wrapWSs } from '../parser/utilityParsers'
+import { inContent, inCurlyBraces, inWhitespaces, spaces } from '../parser/utilityParsers'
 import { Collection } from './collection'
 import { DocumentGeneratable } from './documentGeneratable'
 import { FakeGenerate } from './generate/fakeGenerate'
