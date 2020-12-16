@@ -1,10 +1,10 @@
 import { IParser } from '../parser/iParser'
 import * as P from '../parser/parser'
 import { spaces } from '../parser/utilityParsers'
-import { AutoIncrementAttribute } from './field/autoIncrementAttribute'
+import { AutoIncrementFieldType } from './field/autoIncrementFieldType'
 import { DataGeneratable } from './field/dataGeneratable'
-import { EnumeratedAttribute } from './field/enumeratedAttribute'
-import { FakerAttribute } from './field/fakerAttribute'
+import { EnumeratedFieldType } from './field/enumeratedFieldType'
+import { FakerFieldType } from './field/fakerFieldType'
 
 export class DocumentId implements DataGeneratable {
   attribute: DataGeneratable
@@ -14,15 +14,15 @@ export class DocumentId implements DataGeneratable {
   }
 
   static get parser(): IParser<DocumentId> {
-    const key = P.double(P.string(':'), spaces)
-    const stringValue = P.map(P.match(/[$\w]\w*/), v => new EnumeratedAttribute([v]))
+    const raw = P.map(P.match(/^([^/\s]{1,1500})/), v => new EnumeratedFieldType('string', [v]))
+
     const value = P.or<DataGeneratable>([
-      FakerAttribute.parser,
-      AutoIncrementAttribute.parser,
-      EnumeratedAttribute.parser,
-      stringValue,
+      P.map(FakerFieldType.valueParser, v => new FakerFieldType('string', v)),
+      P.map(AutoIncrementFieldType.valueParser, v => new AutoIncrementFieldType('string', v != null ? Number(v) : 1)),
+      P.map(EnumeratedFieldType.valueParser, v => new EnumeratedFieldType('string', v)),
+      raw,
     ])
-    return P.map(P.double(key, value), v => new DocumentId(v[1]))
+    return P.map(P.triple(P.string(':'), spaces, value), v => new DocumentId(v[2]))
   }
 
   get length(): number {
@@ -44,6 +44,6 @@ export class DocumentId implements DataGeneratable {
   }
 
   private isConstant(value: string): boolean {
-    return !(this.attribute instanceof FakerAttribute) && value.startsWith('$')
+    return !(this.attribute instanceof FakerFieldType) && value.startsWith('$')
   }
 }

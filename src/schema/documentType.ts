@@ -1,6 +1,6 @@
 import { IParser } from '../parser/iParser'
 import * as P from '../parser/parser'
-import { inCurlyBraces, inWhitespaces, spaces } from '../parser/utilityParsers'
+import { inCurlyBraces, inWhitespaces } from '../parser/utilityParsers'
 import { DocumentId } from './documentId'
 import { Field } from './field/field'
 
@@ -16,11 +16,11 @@ export class DocumentType {
   }
 
   static get parser(): IParser<DocumentType> {
-    const name = P.map(P.triple(P.double(P.string('type'), spaces), P.match(/\w+/), spaces), v => v[1])
+    const name = P.map(P.double(P.string('type'), inWhitespaces(P.match(/[a-zA-Z_$][a-zA-Z\d_$]*/))), v => v[1])
     const id = P.option(inWhitespaces(DocumentId.parser))
     const content = P.map(
-      P.triple(P.string('='), spaces, inCurlyBraces(P.many(inWhitespaces(Field.parser(7))))),
-      v => v[2]
+      P.double(P.string('='), inWhitespaces(inCurlyBraces(P.many(inWhitespaces(Field.parser(10)))))),
+      v => v[1]
     )
     return P.map(P.triple(name, id, content), v => new DocumentType(v[0], v[1], v[2]))
   }

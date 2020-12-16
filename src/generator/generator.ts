@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin'
 import { DocumentId } from '../schema/documentId'
-import { AutoIncrementAttribute } from '../schema/field/autoIncrementAttribute'
+import { AutoIncrementFieldType } from '../schema/field/autoIncrementFieldType'
 import { Schema } from '../schema/schema'
 import assert from 'assert'
 import { firestore } from 'firebase-admin/lib/firestore'
@@ -26,7 +26,7 @@ export class Generator {
 
   async generate(): Promise<void> {
     process.stdout.write('generating...\n')
-    // faker.setLocale(this.schema.locale.name)
+    eval(`var faker = require('faker');faker.locale = "${this.schema.locale.name}"`)
 
     for (const collection of this.schema.collections) {
       await this.generateDocuments(collection, '')
@@ -39,7 +39,7 @@ export class Generator {
     for (const document of collection.documents) {
       const documentType = this.schema.documentType.find(value => value.name == document.name)
       const predefinedFields = documentType?.fields ?? []
-      const documentId = document.id ?? documentType?.id ?? new DocumentId(new AutoIncrementAttribute(1))
+      const documentId = document.id ?? documentType?.id ?? new DocumentId(new AutoIncrementFieldType('string', 1))
       const idLength = documentId.length
 
       for (const generate of document.generates) {

@@ -7,10 +7,9 @@ import { DocumentId } from './documentId'
 import { DocumentType } from './documentType'
 import { ArrayAttribute } from './field/arrayAttribute'
 import { DictionaryFieldType } from './field/dictionaryFieldType'
-import { EnumeratedAttribute } from './field/enumeratedAttribute'
-import { FakerAttribute } from './field/fakerAttribute'
+import { EnumeratedFieldType } from './field/enumeratedFieldType'
+import { FakerFieldType } from './field/fakerFieldType'
 import { Field } from './field/field'
-import { ValueFieldType } from './field/valueFieldType'
 import { FakeGenerate } from './generate/fakeGenerate'
 import { JsonGenerate } from './generate/jsonGenerate'
 import { Info } from './info'
@@ -59,13 +58,11 @@ collection users {
           new ProjectId('MyProject'),
           new Constant('myself', 'rizumita'),
           new Locale('ja'),
-          new DocumentType('User', new DocumentId(new EnumeratedAttribute(['$myself'])), [
-            new Field('firstName', new ValueFieldType('string', new FakerAttribute('name.firstName'))),
+          new DocumentType('User', new DocumentId(new EnumeratedFieldType('string', ['$myself'])), [
+            new Field('firstName', new FakerFieldType('string', 'name.firstName')),
             new Field(
               'field',
-              new DictionaryFieldType([
-                new Field('name', new ValueFieldType('string', new FakerAttribute('random.word'))),
-              ])
+              new DictionaryFieldType([new Field('name', new FakerFieldType('string', 'random.word'))])
             ),
           ]),
           new Comment('This is comm'),
@@ -74,11 +71,8 @@ collection users {
               new FakeGenerate(100),
               new JsonGenerate('[ { "firstName" : "Ryoichi", "lastName" : "Izumita" } ]'),
               new Collection('notes', [
-                new Document('Note', new DocumentId(new FakerAttribute('random.uuid')), [
-                  new Field(
-                    'tags',
-                    new ArrayAttribute(new ValueFieldType('string', new FakerAttribute('random.word')), 20)
-                  ),
+                new Document('Note', new DocumentId(new FakerFieldType('string', 'random.uuid')), [
+                  new Field('tags', new ArrayAttribute(new FakerFieldType('string', 'random.word'), 20)),
                 ]),
               ]),
             ]),

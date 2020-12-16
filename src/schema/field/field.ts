@@ -1,10 +1,13 @@
 import assert from 'assert'
 import { IParser } from '../../parser/iParser'
-import { spaces } from '../../parser/utilityParsers'
+import { inWhitespaces, spaces } from '../../parser/utilityParsers'
 import { ArrayAttribute } from './arrayAttribute'
+import { AutoIncrementFieldType } from './autoIncrementFieldType'
 import { DataGeneratable } from './dataGeneratable'
 import { DictionaryFieldType } from './dictionaryFieldType'
-import { ValueFieldType } from './valueFieldType'
+import { EnumeratedFieldType } from './enumeratedFieldType'
+import { FakerFieldType } from './fakerFieldType'
+import { ReferenceFieldType } from './referenceFieldType'
 import * as P from '../../parser/parser'
 
 export class Field {
@@ -19,14 +22,24 @@ export class Field {
   static parser(layer: number): IParser<Field> {
     assert(layer >= 0)
 
-    const separator = P.ignore(P.triple(P.option(spaces), P.string(':'), P.option(spaces)))
-    const namePart = P.map(P.double(P.match(/\w+/), separator), v => v[0])
-    const typeParser =
-      layer == 0
-        ? ValueFieldType.parser
-        : P.or<ValueFieldType | DictionaryFieldType>([ValueFieldType.parser, DictionaryFieldType.parser(layer - 1)])
+    const name = P.map(
+      P.triple(P.match(/\s*/), P.match(/\w+/), P.triple(P.match(/\s*/), P.string(':'), P.match(/\s*/))),
+      v => v[1]
+    )
 
-    return P.map(P.double(namePart, ArrayAttribute.parser(typeParser)), v => new Field(v[0], v[1]))
+    const raw = P.map(P.match(/^([^/\s[\]}]+)/), v => new EnumeratedFieldType(v, []))
+
+    const typeCandidates: IParser<DataGeneratable>[] = [
+      FakerFieldType.parser,
+      AutoIncrementFieldType.parser,
+      ReferenceFieldType.parser,
+      EnumeratedFieldType.parser,
+      raw,
+    ]
+    if (layer != 0) typeCandidates.splice(0, 0, DictionaryFieldType.parser(layer - 1))
+    const type = P.or<DataGeneratable>(typeCandidates)
+
+    return P.map(P.double(name, ArrayAttribute.parser(type)), v => new Field(v[0], v[1]))
   }
 
   get data(): [string, unknown] {
