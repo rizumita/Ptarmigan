@@ -4,16 +4,13 @@ import { IParser } from '../parser/iParser'
 import { inCurlyBraces, inWhitespaces, spaces } from '../parser/utilityParsers'
 import { Document } from './document'
 import { DocumentId } from './documentId'
-import { AutoIncrementAttribute } from './field/autoIncrementAttribute'
 
 export class Collection {
   path: string
-  documentId: DocumentId
   documents: Document[]
 
-  constructor(path: string, documentId: DocumentId | null, documents: Document[]) {
+  constructor(path: string, documents: Document[]) {
     this.path = path
-    this.documentId = documentId ?? new DocumentId(new AutoIncrementAttribute(1))
     this.documents = documents
   }
 
@@ -22,17 +19,9 @@ export class Collection {
 
     const name = P.map(P.triple(P.string('collection'), spaces, P.match(/\w+/)), v => v[2])
     const content = P.map(
-      P.double(spaces, inCurlyBraces(P.many(inWhitespaces(P.or([DocumentId.parser, Document.parser(layer)]))))),
+      P.double(spaces, inCurlyBraces(inWhitespaces(P.many(inWhitespaces(Document.parser(layer)))))),
       v => v[1]
     )
-    return P.map(
-      P.double(name, content),
-      v =>
-        new Collection(
-          v[0],
-          v[1].find((value): value is DocumentId => value instanceof DocumentId) ?? null,
-          v[1].filter((value): value is Document => value instanceof Document)
-        )
-    )
+    return P.map(P.double(name, content), v => new Collection(v[0], v[1]))
   }
 }

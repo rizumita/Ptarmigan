@@ -27,7 +27,7 @@ projectId = MyProject
 const myself = rizumita
 locale = ja
 
-type User = {
+type User: $myself = {
   firstName: string%{{name.firstName}}
   field: {
     name: string%{{random.word}}
@@ -36,11 +36,9 @@ type User = {
 
 // comment
 collection users {
-  id: $myself
   document User {
     collection notes {
-      id: {{random.uuid}}
-      document Note {
+      document Note: {{random.uuid}} {
         tags: string%{{random.word}}[20]  // comment
       }
     }
@@ -61,7 +59,7 @@ collection users {
           new ProjectId('MyProject'),
           new Constant('myself', 'rizumita'),
           new Locale('ja'),
-          new DocumentType('User', [
+          new DocumentType('User', new DocumentId(new EnumeratedAttribute(['$myself'])), [
             new Field('firstName', new ValueFieldType('string', new FakerAttribute('name.firstName'))),
             new Field(
               'field',
@@ -71,12 +69,12 @@ collection users {
             ),
           ]),
           new Comment('This is comm'),
-          new Collection('users', new DocumentId(new EnumeratedAttribute(['$myself'])), [
-            new Document('User', [
+          new Collection('users', [
+            new Document('User', null, [
               new FakeGenerate(100),
               new JsonGenerate('[ { "firstName" : "Ryoichi", "lastName" : "Izumita" } ]'),
-              new Collection('notes', new DocumentId(new FakerAttribute('random.uuid')), [
-                new Document('Note', [
+              new Collection('notes', [
+                new Document('Note', new DocumentId(new FakerAttribute('random.uuid')), [
                   new Field(
                     'tags',
                     new ArrayAttribute(new ValueFieldType('string', new FakerAttribute('random.word')), 20)

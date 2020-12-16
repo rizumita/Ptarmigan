@@ -14,7 +14,7 @@ export class DocumentId implements DataGeneratable {
   }
 
   static get parser(): IParser<DocumentId> {
-    const key = P.double(P.string('id:'), spaces)
+    const key = P.double(P.string(':'), spaces)
     const stringValue = P.map(P.match(/[$\w]\w*/), v => new EnumeratedAttribute([v]))
     const value = P.or<DataGeneratable>([
       FakerAttribute.parser,

@@ -1,3 +1,4 @@
+import * as faker from 'faker'
 import { IParser } from '../../parser/iParser'
 import * as P from '../../parser/parser'
 import { AutoIncrementAttribute } from './autoIncrementAttribute'
@@ -45,8 +46,11 @@ export class ValueFieldType implements DataGeneratable {
         return Boolean(data)
       } else if (this.type === 'int') {
         return Number(data)
+      } else if (this.type === 'timestamp') {
+        return String(data)
+      } else {
+        return String(data)
       }
-      return String(data)
     }
   }
 }

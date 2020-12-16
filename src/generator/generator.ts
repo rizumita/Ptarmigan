@@ -1,4 +1,6 @@
 import * as admin from 'firebase-admin'
+import { DocumentId } from '../schema/documentId'
+import { AutoIncrementAttribute } from '../schema/field/autoIncrementAttribute'
 import { Schema } from '../schema/schema'
 import assert from 'assert'
 import { firestore } from 'firebase-admin/lib/firestore'
@@ -35,16 +37,19 @@ export class Generator {
     const collectionPath = basePath + '/' + collection.path
 
     for (const document of collection.documents) {
+      const documentType = this.schema.documentType.find(value => value.name == document.name)
+      const predefinedFields = documentType?.fields ?? []
+      const documentId = document.id ?? documentType?.id ?? new DocumentId(new AutoIncrementAttribute(1))
+      const idLength = documentId.length
+
       for (const generate of document.generates) {
-        const idLength = collection.documentId.length
         const docLength = generate.length
         const length = Math.min(idLength, docLength)
 
-        const predefinedFields = this.schema.documentType.find(value => value.name == document.name)?.fields ?? []
         const docs: { [key: string]: any }[] = generate.docs(document.fields.concat(predefinedFields))
 
         for (let i = 0; i < length; i++) {
-          const id = collection.documentId.id(v => String(this.schema.getConstant(v)))
+          const id = documentId.id(v => String(this.schema.getConstant(v)))
           const data = docs[i]
           const doc = this.db.collection(collectionPath).doc(id)
           await doc.set(data)

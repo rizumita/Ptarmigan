@@ -5,19 +5,19 @@ projectId = MyProject
 const myself = rizumita
 locale = ja
 
-type User = {
+type User: $myself = {
   firstName: string%{{name.firstName}}
   field: {
     name: string%{{random.word}}
   }
 }
 
+type Note = {}
+
 collection users {
-  id: $myself
   document User {
     collection notes {
-      id: {{random.uuid}}
-      document Note {
+      document Note: {{random.uuid}} {
         tags: string%{{random.word}}[20]
       }
     }
