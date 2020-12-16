@@ -77,8 +77,7 @@ collection users {
                 new Document('Note', [
                   new Field(
                     'tags',
-                    new ValueFieldType('string', new FakerAttribute('random.word')),
-                    new ArrayAttribute(20)
+                    new ArrayAttribute(new ValueFieldType('string', new FakerAttribute('random.word')), 20)
                   ),
                 ]),
               ]),

@@ -14,7 +14,7 @@ describe('DictionaryFieldType', () => {
         }`,
       new DictionaryFieldType([
         new Field('name', new ValueFieldType('string', new FakerAttribute('random.word'))),
-        new Field('date', new ValueFieldType('timestamp', new FakerAttribute('date.recent')), new ArrayAttribute(10)),
+        new Field('date', new ArrayAttribute(new ValueFieldType('timestamp', new FakerAttribute('date.recent')), 10)),
       ]),
     ],
     [

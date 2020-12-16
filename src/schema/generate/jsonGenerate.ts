@@ -20,9 +20,9 @@ export class JsonGenerate implements DocumentGeneratable {
     const content = (layer: number): IParser<unknown> => {
       assert(layer >= 0)
       if (layer == 0) {
-        return inBrackets(P.many(inWhitespaces(P.match(/[^\[\]]+]/))))
+        return inBrackets(P.many(inWhitespaces(P.match(/[^[\]]+/))))
       } else {
-        return inBrackets(P.many(inWhitespaces(P.or([P.match(/[^\[\]]+/), content(layer - 1)]))))
+        return inBrackets(P.many(inWhitespaces(P.or([P.match(/[^[\]]+/), content(layer - 1)]))))
       }
     }
 

@@ -2,19 +2,18 @@ import assert from 'assert'
 import { IParser } from '../../parser/iParser'
 import { spaces } from '../../parser/utilityParsers'
 import { ArrayAttribute } from './arrayAttribute'
+import { DataGeneratable } from './dataGeneratable'
 import { DictionaryFieldType } from './dictionaryFieldType'
 import { ValueFieldType } from './valueFieldType'
 import * as P from '../../parser/parser'
 
 export class Field {
   name: string
-  type: ValueFieldType | DictionaryFieldType
-  arrayAttribute: ArrayAttribute | null
+  dataGenerator: DataGeneratable
 
-  constructor(name: string, type: ValueFieldType | DictionaryFieldType, arrayAttribute: ArrayAttribute | null = null) {
+  constructor(name: string, dataGenerator: DataGeneratable) {
     this.name = name
-    this.type = type
-    this.arrayAttribute = arrayAttribute
+    this.dataGenerator = dataGenerator
   }
 
   static parser(layer: number): IParser<Field> {
@@ -27,34 +26,10 @@ export class Field {
         ? ValueFieldType.parser
         : P.or<ValueFieldType | DictionaryFieldType>([ValueFieldType.parser, DictionaryFieldType.parser(layer - 1)])
 
-    return P.map<[string, ValueFieldType | DictionaryFieldType, ArrayAttribute | null], Field>(
-      P.triple(namePart, typeParser, P.option(ArrayAttribute.parser)),
-      v => new Field(v[0], v[1], v[2])
-    )
+    return P.map(P.double(namePart, ArrayAttribute.parser(typeParser)), v => new Field(v[0], v[1]))
   }
 
-  get data(): { [key: string]: unknown } {
-    const result: { [key: string]: unknown } = {}
-    if (this.arrayAttribute != null) {
-      let length = Math.min(this.type.length, this.arrayAttribute.length == 0 ? Infinity : this.arrayAttribute.length)
-      if (length === Infinity) length = 0
-
-      if (this.type instanceof ValueFieldType) {
-        const data: (string | number | boolean)[] = []
-        for (let i = 0; i < length; i++) {
-          data.push(this.type.data())
-        }
-        result[this.name] = data
-      } else {
-        const data: { [key: string]: unknown }[] = []
-        for (let i = 0; i < length; i++) {
-          data.push(this.type.data())
-        }
-        result[this.name] = data
-      }
-    } else {
-      result[this.name] = this.type.data()
-    }
-    return result
+  get data(): [string, unknown] {
+    return [this.name, this.dataGenerator.data()]
   }
 }

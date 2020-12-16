@@ -34,7 +34,7 @@ describe('Document', () => {
       }`,
       new Document('User', [
         new Field('name', new ValueFieldType('string', new FakerAttribute('name.firstName'))),
-        new Field('tags', new ValueFieldType('string', new FakerAttribute('random.word')), new ArrayAttribute(20)),
+        new Field('tags', new ArrayAttribute(new ValueFieldType('string', new FakerAttribute('random.word')), 20)),
         new Field(
           'dict',
           new DictionaryFieldType([new Field('name', new ValueFieldType('string', new FakerAttribute('random.word')))])

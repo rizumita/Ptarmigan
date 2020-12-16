@@ -16,7 +16,7 @@ export class FakeGenerate implements DocumentGeneratable {
 
     for (let i = 0; i < this.length; i++) {
       const data: { [key: string]: unknown } = {}
-      fields.forEach(value => Object.entries(value.data).forEach(([key, value]) => (data[key] = value)))
+      fields.map(value => value.data).forEach(([key, value]) => (data[key] = value))
       result.push(data)
     }
 

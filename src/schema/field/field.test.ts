@@ -17,7 +17,7 @@ describe('Field', () => {
     ],
     [
       'title: string%{{name.title}}[10]',
-      new Field('title', new ValueFieldType('string', new FakerAttribute('name.title')), new ArrayAttribute(10)),
+      new Field('title', new ArrayAttribute(new ValueFieldType('string', new FakerAttribute('name.title')), 10)),
     ],
     [
       `dict: {
@@ -31,29 +31,31 @@ describe('Field', () => {
     [new Field('id', new ValueFieldType('string')), false, 0],
     [new Field('id', new ValueFieldType('string', new FakerAttribute('random.word'))), false, 1],
     [
-      new Field('id', new ValueFieldType('string', new FakerAttribute('random.word')), new ArrayAttribute(10)),
+      new Field('id', new ArrayAttribute(new ValueFieldType('string', new FakerAttribute('random.word')), 10)),
       true,
       10,
     ],
-    [new Field('id', new ValueFieldType('string', new EnumeratedAttribute([1, 2])), new ArrayAttribute(10)), true, 2],
+    [new Field('id', new ArrayAttribute(new ValueFieldType('string', new EnumeratedAttribute([1, 2])), 10)), true, 2],
     [
       new Field(
         'id',
-        new DictionaryFieldType([new Field('name', new ValueFieldType('int', new AutoIncrementAttribute(1)))]),
-        new ArrayAttribute(10)
+        new ArrayAttribute(
+          new DictionaryFieldType([new Field('name', new ValueFieldType('int', new AutoIncrementAttribute(1)))]),
+          10
+        )
       ),
       true,
       10,
     ],
   ])('get data', (field, isArray, length) => {
     const data = field.data
-    expect(Array.isArray(data)).toEqual(isArray)
-    if (Array.isArray(data)) {
-      expect(data).toHaveLength(length)
+    expect(Array.isArray(data[1])).toEqual(isArray)
+    if (Array.isArray(data[1])) {
+      expect(data[1]).toHaveLength(length)
     } else if (length == 1) {
-      expect((data as { [key: string]: unknown })['id']).not.toBeNull()
+      expect((data[1] as { [key: string]: unknown })['id']).not.toBeNull()
     } else {
-      expect(data).toBeNull()
+      expect(data[1]).toBeNull()
     }
   })
 })
