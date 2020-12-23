@@ -5,11 +5,17 @@ describe('AutoIncrementAttribute', () => {
   test.each([
     ['int%{auto}', 1, ''],
     ['int % {auto:1}', 1, ''],
-  ])('parse', (input, value, next) =>
+  ])('parse int', (input, value, next) =>
     expect(AutoIncrementFieldType.parser.parse(input)).toStrictEqual(
       new ParseSuccess(new AutoIncrementFieldType('int', value), next)
     )
   )
+
+  test.each([['bool % {auto}'], ['bool%{auto:1}']])('parse bool', input => {
+    const result = AutoIncrementFieldType.parser.parse(input)
+    const value = result.tryValue().data()
+    expect(typeof value === 'boolean').toBeTruthy()
+  })
 
   test.each([
     [1, [1, 2]],

@@ -1,7 +1,8 @@
+import { randomInt } from 'crypto'
 import * as faker from 'faker'
 import { IParser } from '../../parser/iParser'
 import * as P from '../../parser/parser'
-import { inContent, inCurlyBraces, inWhitespaces } from '../../parser/utilityParsers'
+import { inCurlyBraces, inWhitespaces } from '../../parser/utilityParsers'
 import { DataGeneratable } from './dataGeneratable'
 
 export class AutoIncrementFieldType implements DataGeneratable {
@@ -38,7 +39,11 @@ export class AutoIncrementFieldType implements DataGeneratable {
     return Infinity
   }
 
-  data(): number {
-    return this.autoIncrementNumber
+  data(): number | boolean {
+    if (this.type == 'bool' || this.type == 'boolean') {
+      return faker.random.boolean()
+    } else {
+      return this.autoIncrementNumber
+    }
   }
 }
