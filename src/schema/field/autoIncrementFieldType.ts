@@ -30,9 +30,10 @@ export class AutoIncrementFieldType implements DataGeneratable {
   }
 
   static get valueParser(): IParser<string | null> {
-    return inCurlyBraces(
-      P.map(P.triple(P.string('auto'), P.option(P.string(':')), P.option(P.match(/\d+/))), v => v[2])
-    )
+    return P.or([
+      P.map(P.triple(P.string('auto'), P.option(P.string(':')), P.option(P.match(/\d+/))), v => v[2]),
+      inCurlyBraces(P.map(P.triple(P.string('auto'), P.option(P.string(':')), P.option(P.match(/\d+/))), v => v[2])),
+    ])
   }
 
   get length(): number {

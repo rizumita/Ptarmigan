@@ -3,6 +3,8 @@ import { AutoIncrementFieldType } from './autoIncrementFieldType'
 
 describe('AutoIncrementAttribute', () => {
   test.each([
+    ['int%auto', 1, ''],
+    ['int % auto', 1, ''],
     ['int%{auto}', 1, ''],
     ['int % {auto:1}', 1, ''],
   ])('parse int', (input, value, next) =>
