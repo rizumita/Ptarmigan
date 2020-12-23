@@ -1,7 +1,6 @@
-import { isNotNull } from '../parser/filterParser'
 import * as P from '../parser/parser'
 import { IParser } from '../parser/iParser'
-import { name, sentence, spaces } from '../parser/utilityParsers'
+import { name, sentence, space, spaces } from '../parser/utilityParsers'
 
 export class Info {
   key: string
@@ -13,16 +12,10 @@ export class Info {
   }
 
   static get parser(): IParser<Info> {
-    const infoKey = P.string('info')
-    const keyPart = P.map(
-      P.seq([P.ignore(infoKey), P.ignore(spaces), name, P.ignore(spaces)]),
-      v => v.find((value): value is string => typeof value === 'string') ?? ''
-    )
-    const contentPart = P.map(
-      P.seq([P.ignore(P.string('=')), P.ignore(spaces), sentence]),
-      v => v.find((value): value is string => typeof value === 'string') ?? ''
-    )
-
-    return P.map<[string, string], Info>(P.double(keyPart, contentPart), v => new Info(v[0], v[1]))
+    const infoKey = P.double(P.string('info'), spaces)
+    const separator = P.triple(spaces, P.string('='), spaces)
+    const key = P.map(P.triple(infoKey, name, separator), v => v[1])
+    const content = P.match(/.+/)
+    return P.map<[string, string], Info>(P.double(key, content), v => new Info(v[0], v[1]))
   }
 }
