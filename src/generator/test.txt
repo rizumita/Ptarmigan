@@ -1,0 +1,30 @@
+info description = My Project
+
+projectId = MyProject
+
+const myself = rizumita
+locale = ja
+
+type User: $myself = {
+  firstName: string%name.firstName
+  field: {
+    name: string%random.word
+  }
+}
+
+type Note = {}
+
+collection users {
+  document User {
+    collection notes {
+      document Note: random.uuid {
+        tags: string%random.word[20]
+      }
+    }
+
+    generate 100
+    generate [
+      { "firstName" : "Ryoichi", "lastName" : "Izumita" }
+    ]
+  }
+}
