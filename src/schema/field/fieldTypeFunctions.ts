@@ -7,6 +7,8 @@ export function parseFieldType(value: unknown, type: string): unknown {
       return parseInt(value)
     } else if (type === 'float' || type === 'double') {
       return parseFloat(value)
+    } else if (type === 'bool' || type === 'boolean') {
+      return value === 'true'
     }
   }
 

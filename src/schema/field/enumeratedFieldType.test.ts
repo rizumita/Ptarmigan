@@ -21,6 +21,12 @@ describe('EnumeratedAttribute', () => {
     )
   )
 
+  test.each([['bool % (true|false)', [true, false]]])('parse bool values', function (input, value) {
+    const result = EnumeratedFieldType.parser.parse(input).tryValue()
+    const resultValue = [result.data(), result.data()]
+    expect(resultValue).toStrictEqual(value)
+  })
+
   test.each([
     [new EnumeratedFieldType('string', ['1', '2']), ['1', '2']],
     [new EnumeratedFieldType('int', ['1', '2']), [1, 2]],

@@ -1,4 +1,3 @@
-import assert from 'assert'
 import { IParser } from '../../parser/iParser'
 import * as P from '../../parser/parser'
 import { inParentheses, inWhitespaces } from '../../parser/utilityParsers'
