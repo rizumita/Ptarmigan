@@ -2,6 +2,7 @@ import { ParseSuccess } from '../parser/parseResult'
 import { Collection } from './collection'
 import { Comment } from './comment'
 import { Constant } from './constant'
+import { Depend } from './depend'
 import { Document } from './document'
 import { DocumentId } from './documentId'
 import { DocumentType } from './documentType'
@@ -21,15 +22,17 @@ describe('Schema', () => {
   const schema = `
 info description = My Project
 
+depend ./subSchema.txt
+
 projectId = MyProject
 
 const myself = rizumita
 locale = ja
 
 type User: $myself = {
-  firstName: string%{{name.firstName}}
+  firstName: string%name.firstName
   field: {
-    name: string%{{random.word}}
+    name: string%random.word
   }
 }
 
@@ -37,8 +40,8 @@ type User: $myself = {
 collection users {
   document User {
     collection notes {
-      document Note: {{random.uuid}} {
-        tags: string%{{random.word}}[20]  // comment
+      document Note: random.uuid {
+        tags: string%random.word[20]  // comment
       }
     }
 
@@ -55,6 +58,7 @@ collection users {
       new ParseSuccess(
         new Schema([
           new Info('description', 'My Project'),
+          new Depend('./subSchema.txt'),
           new ProjectId('MyProject'),
           new Constant('myself', 'rizumita'),
           new Locale('ja'),

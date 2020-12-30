@@ -5,6 +5,8 @@ projectId = MyProject
 const myself = rizumita
 locale = ja
 
+depend subTest.txt
+
 type User: $myself = {
   firstName: string%name.firstName
   field: {

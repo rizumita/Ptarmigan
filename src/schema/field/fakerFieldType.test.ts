@@ -5,6 +5,7 @@ describe('fakerFieldType', () => {
   test.each([
     ['string%random.word&unique', new FakerFieldType('string', 'random.word', true), ''],
     ['string%random.word()', new FakerFieldType('string', 'random.word()', false), ''],
+    ['timestamp%date.past(1)', new FakerFieldType('timestamp', 'date.past(1)', false), ''],
   ])('parse', (input, value, next) =>
     expect(FakerFieldType.parser.parse(input)).toStrictEqual(new ParseSuccess(value, next))
   )
