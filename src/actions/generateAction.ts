@@ -15,7 +15,7 @@ export class GenerateAction {
 
   public async execute(): Promise<void> {
     try {
-      const schema = Schema.parser.parse(this.schemaFile.text).tryValue()
+      const schema = this.parseSchema(this.schemaFile)
       if (schema.projectId == null) schema.projectId = this.projectId
       SchemaValidator.validate(schema)
       await new Generator(schema).generate()
@@ -24,6 +24,22 @@ export class GenerateAction {
       process.stderr.write('name:', e.name)
       process.stderr.write('message:', e.message)
       process.stderr.write('stack:', e.stack)
+    }
+  }
+
+  private parseSchema(file: SchemaFile, schema: Schema | null = null): Schema {
+    const parsedSchema = Schema.parser.parse(file.text).tryValue()
+
+    for (const depend of parsedSchema.depends) {
+      const subFile = new SchemaFile(depend.getPath(file.path))
+      this.parseSchema(subFile, parsedSchema)
+    }
+
+    if (schema != null) {
+      schema.append(parsedSchema)
+      return schema
+    } else {
+      return parsedSchema
     }
   }
 }
